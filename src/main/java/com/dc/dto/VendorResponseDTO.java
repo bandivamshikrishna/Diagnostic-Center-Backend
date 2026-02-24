@@ -1,24 +1,37 @@
 package com.dc.dto;
 
+import java.util.List;
 
 public class VendorResponseDTO {
-    private Long id;
+
+    private Long ID;
+    private String vendorCode;
     private String name;
     private String email;
-    private String address;
     private String phoneNumber;
-    private Long createdByUserID;
-    private String createdDate;
-    private boolean active;
-    private String activationEndDate;
+    private String address;
+    private String logoFolderPath;
+    private String CreatedBy;
+    private String CreatedDate;
+    private Boolean active;
     private Long maxNoOfUsers;
+    private String activationEndDate;
+    private List<VendorBranchDTO> branches;
 
-    public Long getId() {
-        return id;
+    public Long getID() {
+        return ID;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setID(Long ID) {
+        this.ID = ID;
+    }
+
+    public String getVendorCode() {
+        return vendorCode;
+    }
+
+    public void setVendorCode(String vendorCode) {
+        this.vendorCode = vendorCode;
     }
 
     public String getName() {
@@ -37,14 +50,6 @@ public class VendorResponseDTO {
         this.email = email;
     }
 
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
     public String getPhoneNumber() {
         return phoneNumber;
     }
@@ -53,36 +58,44 @@ public class VendorResponseDTO {
         this.phoneNumber = phoneNumber;
     }
 
-    public Long getCreatedByUserID() {
-        return createdByUserID;
+    public String getAddress() {
+        return address;
     }
 
-    public void setCreatedByUserID(Long createdByUserID) {
-        this.createdByUserID = createdByUserID;
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getLogoFolderPath() {
+        return logoFolderPath;
+    }
+
+    public void setLogoFolderPath(String logoFolderPath) {
+        this.logoFolderPath = logoFolderPath;
+    }
+
+    public String getCreatedBy() {
+        return CreatedBy;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        CreatedBy = createdBy;
     }
 
     public String getCreatedDate() {
-        return createdDate;
+        return CreatedDate;
     }
 
     public void setCreatedDate(String createdDate) {
-        this.createdDate = createdDate;
+        CreatedDate = createdDate;
     }
 
-    public boolean isActive() {
+    public Boolean getActive() {
         return active;
     }
 
-    public void setActive(boolean active) {
+    public void setActive(Boolean active) {
         this.active = active;
-    }
-
-    public String getActivationEndDate() {
-        return activationEndDate;
-    }
-
-    public void setActivationEndDate(String activationEndDate) {
-        this.activationEndDate = activationEndDate;
     }
 
     public Long getMaxNoOfUsers() {
@@ -92,5 +105,20 @@ public class VendorResponseDTO {
     public void setMaxNoOfUsers(Long maxNoOfUsers) {
         this.maxNoOfUsers = maxNoOfUsers;
     }
-}
 
+    public List<VendorBranchDTO> getBranches() {
+        return branches;
+    }
+
+    public void setBranches(List<VendorBranchDTO> branches) {
+        this.branches = branches;
+    }
+
+    public String getActivationEndDate() {
+        return activationEndDate;
+    }
+
+    public void setActivationEndDate(String activationEnDate) {
+        this.activationEndDate = activationEnDate;
+    }
+}

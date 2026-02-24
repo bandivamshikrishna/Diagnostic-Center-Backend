@@ -13,7 +13,7 @@ public class VendorBranchEntity {
     @JoinColumn(name = "vendor_id", referencedColumnName = "id")
     private VendorEntity vendor;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String branchCode;
 
     @Column(nullable = false)

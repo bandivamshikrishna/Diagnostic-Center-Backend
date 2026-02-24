@@ -1,10 +1,14 @@
 package com.dc.dto;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
+
+import java.time.LocalDate;
+import java.util.Date;
 
 public class VendorUpdateRequestDTO {
 
@@ -28,8 +32,9 @@ public class VendorUpdateRequestDTO {
     @NotNull(message = "Active Flag is required")
     private Boolean active;
 
-    @NotBlank(message = "Activation End Date is required")
-    private String activationEndDate;
+    @NotNull(message = "Activation End Date is required")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+    private LocalDate activationEndDate;
 
     @NotNull(message = "Last Modified By User ID is required")
     private Long lastModifiedByUserID;
@@ -85,11 +90,11 @@ public class VendorUpdateRequestDTO {
         this.active = active;
     }
 
-    public String getActivationEndDate() {
+    public LocalDate getActivationEndDate() {
         return activationEndDate;
     }
 
-    public void setActivationEndDate(String activationEndDate) {
+    public void setActivationEndDate(LocalDate activationEndDate) {
         this.activationEndDate = activationEndDate;
     }
 

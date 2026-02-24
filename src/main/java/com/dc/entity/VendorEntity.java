@@ -3,7 +3,9 @@ package com.dc.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 @Entity(name = "tbl_vendor_details")
@@ -15,6 +17,9 @@ public class VendorEntity {
 
     @Column(nullable = false)
     private String name;
+
+    @Column(nullable = false)
+    private String vendorCode;
 
     @Email
     @Column(unique = true, nullable = false)
@@ -45,8 +50,8 @@ public class VendorEntity {
     @Column(nullable = false, name = "is_active")
     private Boolean active;
 
-    @Column(nullable = false)
-    private LocalDateTime activationEndDate;
+    @Column(nullable = true)
+    private LocalDate activationEndDate;
 
     @Column(nullable = false)
     private Long maxNoOfUsers;
@@ -129,6 +134,13 @@ public class VendorEntity {
         return createdByUserID;
     }
 
+    public String getVendorCode() {
+        return vendorCode;
+    }
+
+    public void setVendorCode(String vendorCode) {
+        this.vendorCode = vendorCode;
+    }
 
     public void setCreatedByUserID(UserAuthEntity createdByUserID) {
         this.createdByUserID = createdByUserID;
@@ -166,11 +178,11 @@ public class VendorEntity {
         this.active = active;
     }
 
-    public LocalDateTime getActivationEndDate() {
+    public LocalDate getActivationEndDate() {
         return activationEndDate;
     }
 
-    public void setActivationEndDate(LocalDateTime activationEndDate) {
+    public void setActivationEndDate(LocalDate activationEndDate) {
         this.activationEndDate = activationEndDate;
     }
 

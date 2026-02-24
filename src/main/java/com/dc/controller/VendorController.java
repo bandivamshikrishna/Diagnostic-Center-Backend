@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/admin/vendor")
@@ -25,8 +28,10 @@ public class VendorController {
 
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<String> createVendor(@Valid @RequestPart("data") VendorCreateRequestDTO vendorCreateRequestDTO , @RequestPart("logo")MultipartFile logo, @AuthenticationPrincipal UserAuthEntity userAuthEntity) throws IOException, IOException {
-        return new ResponseEntity<>(vendorService.createVendor(vendorCreateRequestDTO,logo,userAuthEntity), HttpStatus.CREATED);
+    public ResponseEntity<Map<String,String>> createVendor(@Valid @RequestPart("data") VendorCreateRequestDTO vendorCreateRequestDTO , @RequestPart("logo")MultipartFile logo, @AuthenticationPrincipal UserAuthEntity userAuthEntity) throws IOException, IOException {
+        Map<String,String> msg = new HashMap<>();
+        msg.put("message", vendorService.createVendor(vendorCreateRequestDTO,logo,userAuthEntity));
+        return new ResponseEntity<>(msg, HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
@@ -49,6 +54,9 @@ public class VendorController {
         return new ResponseEntity<>(vendorService.manageVendorMedicalTests(vendorManageMedicalTestsDTO),HttpStatus.OK);
     }
 
-
+    @GetMapping
+    public ResponseEntity<List<VendorListResponseDTO>> getAllVendors(){
+        return new ResponseEntity<>(vendorService.getAllActiveVendors(), HttpStatus.OK);
+    }
 
 }

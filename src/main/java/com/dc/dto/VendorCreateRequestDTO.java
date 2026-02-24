@@ -1,12 +1,15 @@
 package com.dc.dto;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 public class VendorCreateRequestDTO {
@@ -29,8 +32,8 @@ public class VendorCreateRequestDTO {
 
     private MultipartFile logo;
 
-    @NotBlank(message = "Activation End Date is required")
-    private String activationEndDate;
+    @NotNull(message = "Activation End Date is required")
+    private LocalDate activationEndDate;
 
     @NotNull(message = "Max No Of Users is required")
     private Long maxNoOfUsers;
@@ -78,11 +81,11 @@ public class VendorCreateRequestDTO {
         this.logo = logo;
     }
 
-    public String getActivationEndDate() {
+    public LocalDate getActivationEndDate() {
         return activationEndDate;
     }
 
-    public void setActivationEndDate(String activationEndDate) {
+    public void setActivationEndDate(LocalDate activationEndDate) {
         this.activationEndDate = activationEndDate;
     }
 

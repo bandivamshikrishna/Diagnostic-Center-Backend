@@ -13,8 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class VendorServiceImpl implements VendorService {
@@ -33,7 +32,6 @@ public class VendorServiceImpl implements VendorService {
         this.vendorPackageRepository = vendorPackageRepository;
         this.medicalTestRepository = medicalTestRepository;
         this.vendorMedicalTestRepository = vendorMedicalTestRepository;
-
     }
 
     @Override
@@ -44,21 +42,32 @@ public class VendorServiceImpl implements VendorService {
             throw new VendorException("email",String.format("Vendor Already Exists with Email ID : %s",vendorCreateRequestDTO.getEmail()));
         if(vendorRepository.existsByPhoneNumber(vendorCreateRequestDTO.getPhoneNumber()))
             throw new VendorException("phoneNumber","Phone Number Already Exists");
+        validateVendorBranches(vendorCreateRequestDTO.getBranches());
         VendorEntity vendorEntity = VendorMapper.fromCreateDTOToEntity(vendorCreateRequestDTO);
+
         vendorEntity.setCreatedByUserID(createdByUserID);
-        vendorEntity.setCreatedDate( LocalDateTime.now());
+        vendorEntity.setCreatedDate(LocalDateTime.now());
         vendorEntity.setEmail(vendorEntity.getEmail().toLowerCase());
         vendorEntity.setActive(true);
         vendorEntity.setLogoFolderPath(FileStorageService.storeFile(logo,"img"));
+        vendorEntity.setVendorCode("V"+String.format("%010d", vendorRepository.getNextVendorCode()));
         VendorEntity savedVendorEntity = vendorRepository.save(vendorEntity);
 
         //Email Notification
-        return "Vendor Created Successfully with ID : "+savedVendorEntity.getId();
+        return "Vendor Created Successfully with ID : "+savedVendorEntity.getVendorCode();
     }
 
     @Override
-    public void getAllActiveVendors() {
+    public List<VendorListResponseDTO> getAllActiveVendors() {
+        List<VendorEntity> vendorEntities = vendorRepository.findAll();
+        List<VendorListResponseDTO> vendorResponses = new ArrayList<>();
 
+        if(!vendorEntities.isEmpty()){
+            return vendorEntities.stream().map(
+                    VendorMapper::fromEntityToListDTO
+            ).toList();
+        }
+        return vendorResponses;
     }
 
     @Override
@@ -82,7 +91,6 @@ public class VendorServiceImpl implements VendorService {
 
         if(vendorRepository.existsByPhoneNumberAndIdNot(vendorUpdateRequestDTO.getPhoneNumber(), id))
             throw new VendorException("phoneNumber",String.format("Vendor Already Exists with Phone Number : %s", vendorUpdateRequestDTO.getPhoneNumber()));
-
         VendorMapper.fromUpdateDTOToEntity(vendorEntity,vendorUpdateRequestDTO);
         vendorEntity.setLastModifiedByUserID(lastModifiedByUserID);
         vendorEntity.setLastModifiedDate(LocalDateTime.now());
@@ -145,6 +153,16 @@ public class VendorServiceImpl implements VendorService {
         }
         vendorMedicalTestRepository.saveAll(vendorMedicalTestEntities);
         return "Tests Updated successfully";
+    }
+
+
+
+    public void validateVendorBranches(List<VendorBranchDTO> vendorBranchDTO){
+        Set<String> branches = new HashSet<>();
+        for (VendorBranchDTO branchDTO : vendorBranchDTO){
+            if(!branches.add(branchDTO.getBranchCode()))
+                throw new VendorException("branchCode", String.format("Duplicate Branch Code %s", branchDTO.getBranchCode()));
+        }
     }
 
 }
