@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.util.List;
 
 public interface VendorService {
-    public String createVendor(VendorCreateRequestDTO vendorCreateRequestDTO, MultipartFile logo,UserAuthEntity userAuthEntity) throws IOException;
+    public String createVendor(VendorCreateRequestDTO vendorCreateRequestDTO, MultipartFile logo,UserAuthEntity userAuthEntity, String uuid) throws IOException;
     public List<VendorListResponseDTO> getAllActiveVendors();
     public VendorResponseDTO getVendorById(long id);
     public String updateVendorById(long id, VendorUpdateRequestDTO vendorUpdateRequestDTO);

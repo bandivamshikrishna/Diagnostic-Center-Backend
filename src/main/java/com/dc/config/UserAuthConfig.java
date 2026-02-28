@@ -1,11 +1,9 @@
 package com.dc.config;
 
+import com.dc.repository.APILoggingRepository;
 import com.dc.repository.UserAuthTokenRepository;
 import com.dc.serviceImpl.UserAuthServiceImpl;
-import com.dc.utils.JWTAuthenticationProvider;
-import com.dc.utils.JWTRefreshFilter;
-import com.dc.utils.JWTUtils;
-import com.dc.utils.JWTValidationFilter;
+import com.dc.utils.*;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -34,7 +32,7 @@ import java.util.List;
 public class UserAuthConfig {
 
     private static final List<String> publicURLs = List.of("/api/user/login",
-            "/api/user/validate-token","/api/patient");
+            "/api/user/validate-token");
 
     public static List<String> getPublicURLs(){
         return publicURLs;
@@ -63,10 +61,12 @@ public class UserAuthConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, AuthenticationManager authenticationManager,
                                                    JWTUtils jwtUtils, LogoutHandler logoutHandler,
-                                                   UserAuthTokenRepository userAuthTokenRepository) throws Exception {
+                                                   UserAuthTokenRepository userAuthTokenRepository,
+                                                   APILoggingRepository apiLoggingRepository) throws Exception {
 
         JWTValidationFilter jwtValidationFilter = new JWTValidationFilter(authenticationManager);
         JWTRefreshFilter jwtRefreshFilter = new JWTRefreshFilter(authenticationManager,jwtUtils,userAuthTokenRepository);
+        APILoggingFilter apiLoggingFilter = new APILoggingFilter(apiLoggingRepository);
 
 
         return  http
@@ -83,6 +83,7 @@ public class UserAuthConfig {
                 .sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtValidationFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterAfter(jwtRefreshFilter, JWTValidationFilter.class)
+                .addFilterAfter(apiLoggingFilter, JWTRefreshFilter.class)
                 .logout(logout -> logout
                         .logoutUrl("/api/user/logout")
                         .addLogoutHandler(logoutHandler)

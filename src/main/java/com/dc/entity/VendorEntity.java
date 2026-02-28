@@ -16,6 +16,9 @@ public class VendorEntity {
     private Long id;
 
     @Column(nullable = false)
+    private String uuid;
+
+    @Column(nullable = false)
     private String name;
 
     @Column(nullable = false)
@@ -76,6 +79,14 @@ public class VendorEntity {
 
     public Long getId() {
         return this.id;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 
     public List<VendorMedicalTestEntity> getMedicalTest() {

@@ -35,7 +35,7 @@ public class VendorServiceImpl implements VendorService {
     }
 
     @Override
-    public String createVendor(VendorCreateRequestDTO vendorCreateRequestDTO, MultipartFile logo, UserAuthEntity userAuthEntity) throws IOException {
+    public String createVendor(VendorCreateRequestDTO vendorCreateRequestDTO, MultipartFile logo, UserAuthEntity userAuthEntity, String uuid) throws IOException {
         UserAuthEntity createdByUserID = userAuthRepository.findById(userAuthEntity.getId()).orElseThrow(
                 () -> new UserException("createdByUserID",String.format("User Not Found with ID : %d", userAuthEntity.getId())));
         if(vendorRepository.existsByEmail(vendorCreateRequestDTO.getEmail().toLowerCase().trim()))
@@ -44,7 +44,7 @@ public class VendorServiceImpl implements VendorService {
             throw new VendorException("phoneNumber","Phone Number Already Exists");
         validateVendorBranches(vendorCreateRequestDTO.getBranches());
         VendorEntity vendorEntity = VendorMapper.fromCreateDTOToEntity(vendorCreateRequestDTO);
-
+        vendorEntity.setUuid(uuid);
         vendorEntity.setCreatedByUserID(createdByUserID);
         vendorEntity.setCreatedDate(LocalDateTime.now());
         vendorEntity.setEmail(vendorEntity.getEmail().toLowerCase());

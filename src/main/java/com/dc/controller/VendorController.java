@@ -28,9 +28,11 @@ public class VendorController {
 
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Map<String,String>> createVendor(@Valid @RequestPart("data") VendorCreateRequestDTO vendorCreateRequestDTO , @RequestPart("logo")MultipartFile logo, @AuthenticationPrincipal UserAuthEntity userAuthEntity) throws IOException, IOException {
+    public ResponseEntity<Map<String,String>> createVendor(@Valid @RequestPart("data") VendorCreateRequestDTO vendorCreateRequestDTO , @RequestPart("logo")MultipartFile logo,
+                                                           @AuthenticationPrincipal UserAuthEntity userAuthEntity,
+                                                           @RequestHeader("uuid") String uuid) throws IOException, IOException {
         Map<String,String> msg = new HashMap<>();
-        msg.put("message", vendorService.createVendor(vendorCreateRequestDTO,logo,userAuthEntity));
+        msg.put("message", vendorService.createVendor(vendorCreateRequestDTO,logo,userAuthEntity, uuid));
         return new ResponseEntity<>(msg, HttpStatus.CREATED);
     }
 
