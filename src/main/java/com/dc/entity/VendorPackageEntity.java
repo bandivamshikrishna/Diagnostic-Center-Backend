@@ -2,9 +2,11 @@ package com.dc.entity;
 
 
 import jakarta.persistence.*;
+import org.hibernate.envers.Audited;
 
 import java.util.List;
 
+@Audited
 @Entity(name = "tbl_vendor_package_details")
 public class VendorPackageEntity {
 

@@ -13,17 +13,21 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String,String>> handleMethodArgumentNotValidException(MethodArgumentNotValidException e){
-        Map<String,String> errors = new HashMap<>();
-       e.getBindingResult().getFieldErrors().forEach(
-               error->errors.put(error.getField(),error.getDefaultMessage()));
+    public ResponseEntity<Map<String, Object>> handleMethodArgumentNotValidException(MethodArgumentNotValidException e){
+       Map<String,String> fieldErrors = new HashMap<>();
+       e.getBindingResult().getFieldErrors().forEach(error->{
+           fieldErrors.put(error.getField(),error.getDefaultMessage());
+       });
+       List<String> fieldMessages = fieldErrors.values().stream().toList();
+       Map<String,Object> errors = new HashMap<>();
+       errors.put("errors", fieldErrors);
+       errors.put("errorMessages", fieldMessages);
        return ResponseEntity.badRequest().body(errors);
     }
 
@@ -37,9 +41,12 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(GenericException.class)
-    public ResponseEntity<Map<String,String>> handleCustomExceptions(GenericException e){
-        Map<String,String> errors = new HashMap<>();
-        errors.put(e.getFieldName(), e.getMessage());
+    public ResponseEntity<Map<String,Object>> handleCustomExceptions(GenericException e){
+        Map<String,Object> errors = new HashMap<>();
+        Map<String,String> fieldErrors = new HashMap<>();
+        fieldErrors.put(e.getFieldName(),e.getMessage());
+        errors.put("errors",fieldErrors);
+        errors.put("errorMessages", fieldErrors.values().stream().toList());
         return ResponseEntity.badRequest().body(errors);
     }
 
@@ -72,14 +79,14 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InternalAuthenticationServiceException.class)
     public ResponseEntity<Map<String,String>> handleUserLoginException(InternalAuthenticationServiceException e){
         Map<String,String> errors = new HashMap<>();
-        errors.put("email", e.getMessage());
+        errors.put("message", e.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errors);
     }
 
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<Map<String,String>> handleBadCredentialsException(BadCredentialsException e){
         Map<String,String> errors = new HashMap<>();
-        errors.put("message", "In correct Email or Password");
+        errors.put("message", "In correct Password");
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errors);
     }
 

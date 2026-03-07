@@ -1,17 +1,17 @@
 package com.dc.entity;
-
-import com.dc.enums.RoleEnum;
-import com.dc.exception.RoleNotFoundException;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
+import org.hibernate.envers.Audited;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
+@Audited
 @Entity(name = "tbl_user_details")
 public class UserAuthEntity implements UserDetails {
 
@@ -19,19 +19,27 @@ public class UserAuthEntity implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String fullName;
+
     @Email
     @Column(unique = true,nullable = false)
     private String email;
 
-    @Column(nullable = true)
     private String password;
 
-    @Column(nullable = false)
-    private Long roleID;
+    private String userCode;
+
+    @ManyToOne
+    @JoinColumn(name = "role_id", referencedColumnName = "id")
+    private UserRoleEntity role;
 
     @ManyToOne
     @JoinColumn(name = "vendor_id", referencedColumnName = "id")
     private VendorEntity vendorID;
+
+    @ManyToOne
+    @JoinColumn(name = "vendor_branch", referencedColumnName = "id")
+    private VendorBranchEntity vendorBranch;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by_user_id",referencedColumnName = "id")
@@ -46,6 +54,12 @@ public class UserAuthEntity implements UserDetails {
     @Column(name = "is_locked",nullable = false)
     private Boolean locked;
 
+    @Column
+    private LocalDateTime lastLoginDateTime;
+
+    @Column
+    private LocalDateTime lastLogoutDateTime;
+
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     private List<UserAuthTokenEntity> tokens;
@@ -53,7 +67,7 @@ public class UserAuthEntity implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        String role = "ROLE_"+RoleEnum.getRole(getRoleID());
+        String role = "ROLE_"+getRole().getRoleName();
         return List.of(new SimpleGrantedAuthority(role));
     }
 
@@ -104,14 +118,12 @@ public class UserAuthEntity implements UserDetails {
         this.email = email;
     }
 
-    public Long getRoleID() {
-        return roleID;
+    public UserRoleEntity getRole() {
+        return role;
     }
 
-    public void setRoleID(Long roleID) {
-        if(!RoleEnum.isValid(roleID))
-            throw new RoleNotFoundException(String.format("Invalid Role ID : %d", roleID));
-        this.roleID = roleID;
+    public void setRole(UserRoleEntity userRole){
+        this.role = userRole;
     }
 
     public VendorEntity getVendorID() {
@@ -148,5 +160,46 @@ public class UserAuthEntity implements UserDetails {
 
     public void setLocked(Boolean locked) {
         this.locked = locked;
+    }
+
+    public LocalDateTime getLastLoginDateTime() {
+        return lastLoginDateTime;
+    }
+
+    public void setLastLoginDateTime(LocalDateTime lastLoginDateTime) {
+        this.lastLoginDateTime = lastLoginDateTime;
+    }
+
+    public LocalDateTime getLastLogoutDateTime() {
+        return lastLogoutDateTime;
+    }
+
+    public void setLastLogoutDateTime(LocalDateTime lastLogoutDateTime) {
+        this.lastLogoutDateTime = lastLogoutDateTime;
+    }
+
+    public VendorBranchEntity getVendorBranch() {
+        return vendorBranch;
+    }
+
+    public void setVendorBranch(VendorBranchEntity vendorBranch) {
+        this.vendorBranch = vendorBranch;
+    }
+
+    public String getUserCode() {
+        return userCode;
+    }
+
+    public void setUserCode(String userCode) {
+        this.userCode = userCode;
+    }
+
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
 }

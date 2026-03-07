@@ -1,8 +1,9 @@
 package com.dc.config;
 
 import com.dc.entity.UserAuthEntity;
-import com.dc.enums.RoleEnum;
+import com.dc.exception.RoleNotFoundException;
 import com.dc.repository.UserAuthRepository;
+import com.dc.repository.UserRoleRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -13,21 +14,23 @@ import java.util.Scanner;
 @Component
 public class AdminCreation implements CommandLineRunner {
 
-    private final UserAuthRepository userAuthRepository;
+    private final UserRoleRepository userRoleRepository;
     private final PasswordEncoder passwordEncoder;
+    private final UserAuthRepository userAuthRepository;
 
-    public AdminCreation(UserAuthRepository userAuthRepository,PasswordEncoder passwordEncoder){
-        this.userAuthRepository = userAuthRepository;
+    public AdminCreation(UserRoleRepository userRoleRepository,PasswordEncoder passwordEncoder,
+                         UserAuthRepository userAuthRepository){
+        this.userRoleRepository = userRoleRepository;
         this.passwordEncoder = passwordEncoder;
+        this.userAuthRepository = userAuthRepository;
     }
 
     @Override
     public void run(String... args) throws Exception {
         if (args.length > 0) {
-            System.out.println("Hello" + args[0].equalsIgnoreCase("admin-creation"));
             if (!"admin-creation".equalsIgnoreCase(args[0]))
                 return;
-            if (userAuthRepository.existsByRoleID(RoleEnum.ADMIN.getId())) {
+            if (userAuthRepository.existsByRole_RoleCode("AD")) {
                 System.out.println("Admin User Already Exists");
                 return;
             }
@@ -52,11 +55,11 @@ public class AdminCreation implements CommandLineRunner {
             UserAuthEntity userAuthEntity = new UserAuthEntity();
             userAuthEntity.setEmail(email);
             userAuthEntity.setPassword(passwordEncoder.encode(confirmPassword));
-            userAuthEntity.setRoleID(RoleEnum.ADMIN.getId());
-//        userAuthEntity.setVendorID(0L);
+            userAuthEntity.setRole(userRoleRepository.findByRoleCode("AD").orElseThrow(
+                    ()-> new RoleNotFoundException("Invalid Role")
+            ));
             userAuthEntity.setActive(true);
             userAuthEntity.setLocked(false);
-//        userAuthEntity.setCreatedByUserID(0L);
             userAuthEntity.setCreatedDate(LocalDate.now());
             userAuthRepository.save(userAuthEntity);
             System.out.println("Admin User Created Successfully...");

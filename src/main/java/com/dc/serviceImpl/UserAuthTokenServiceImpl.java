@@ -7,11 +7,9 @@ import com.dc.exception.TokenException;
 import com.dc.repository.UserAuthRepository;
 import com.dc.repository.UserAuthTokenRepository;
 import com.dc.service.UserAuthTokenService;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -26,14 +24,16 @@ public class UserAuthTokenServiceImpl implements UserAuthTokenService {
     }
 
     @Override
-    public void createToken(UserAuthEntity userAuthEntity, String token, TokenTypeEnum tokenType, Long milliSeconds) {
+    public void createToken(UserAuthEntity userAuthEntity, String token, TokenTypeEnum tokenType, Long time) {
         UserAuthTokenEntity userAuthTokenEntity = new UserAuthTokenEntity();
         userAuthTokenEntity.setToken(token.isBlank() ? UUID.randomUUID().toString() : token);
         userAuthTokenEntity.setUser(userAuthEntity);
         userAuthTokenEntity.setTokenCreatedDate(LocalDateTime.now());
         userAuthTokenEntity.setTokenRevoked(false);
         userAuthTokenEntity.setTokenType(tokenType);
-        userAuthTokenEntity.setTokenExpirationDate(LocalDateTime.now().plusSeconds(milliSeconds/1000));
+        userAuthTokenEntity.setTokenExpirationDate(tokenType == TokenTypeEnum.SET_OR_RESET_PASSWORD_TOKEN ?
+                LocalDateTime.now().plusMinutes(time) :
+                LocalDateTime.now().plusSeconds(time/1000));
         userAuthTokenRepository.save(userAuthTokenEntity);
     }
 

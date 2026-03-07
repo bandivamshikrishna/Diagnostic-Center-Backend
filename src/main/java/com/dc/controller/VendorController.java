@@ -28,7 +28,7 @@ public class VendorController {
 
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Map<String,String>> createVendor(@Valid @RequestPart("data") VendorCreateRequestDTO vendorCreateRequestDTO , @RequestPart("logo")MultipartFile logo,
+    public ResponseEntity<Map<String,String>> createVendor(@Valid @RequestPart("data") VendorCreateRequestDTO vendorCreateRequestDTO , @RequestPart("logo") MultipartFile logo,
                                                            @AuthenticationPrincipal UserAuthEntity userAuthEntity,
                                                            @RequestHeader("uuid") String uuid) throws IOException, IOException {
         Map<String,String> msg = new HashMap<>();
@@ -41,9 +41,13 @@ public class VendorController {
         return new ResponseEntity<>(vendorService.getVendorById(id),HttpStatus.OK);
     }
 
-    @PatchMapping("/{id}")
-    public ResponseEntity<String> updateVendorByID(@PathVariable(name = "id") long id, @Valid @RequestBody VendorUpdateRequestDTO vendorUpdateRequestDTO){
-        return new ResponseEntity<>(vendorService.updateVendorById(id,vendorUpdateRequestDTO), HttpStatus.OK);
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Map<String,String>> updateVendorByID(@PathVariable(name = "id") long id, @Valid @RequestPart("data") VendorUpdateRequestDTO vendorUpdateRequestDTO,
+                                                   @RequestPart("logo") MultipartFile logo, @AuthenticationPrincipal UserAuthEntity userAuthEntity,
+                                                   @RequestHeader("uuid") String uuid){
+        Map<String,String> msg = new HashMap<>();
+        msg.put("message", vendorService.updateVendorById(id,vendorUpdateRequestDTO, logo, userAuthEntity, uuid));
+        return new ResponseEntity<>(msg, HttpStatus.OK);
     }
 
     @PostMapping("/create-package")
@@ -59,6 +63,16 @@ public class VendorController {
     @GetMapping
     public ResponseEntity<List<VendorListResponseDTO>> getAllVendors(){
         return new ResponseEntity<>(vendorService.getAllActiveVendors(), HttpStatus.OK);
+    }
+
+    @GetMapping("/drop-down")
+    public ResponseEntity<List<Map<String, String>>> getListOfVendor(){
+        return new ResponseEntity<>(vendorService.getListOfVendors(), HttpStatus.OK);
+    }
+
+    @GetMapping("/branches/{vendorCode}")
+    public ResponseEntity<List<Map<String, String>>> getVendorBranches(@PathVariable("vendorCode") String vendorCode){
+        return new ResponseEntity<>(vendorService.getVendorBranches(vendorCode), HttpStatus.OK);
     }
 
 }

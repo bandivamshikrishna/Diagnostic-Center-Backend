@@ -33,22 +33,12 @@ public class VendorUpdateRequestDTO {
     private Boolean active;
 
     @NotNull(message = "Activation End Date is required")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+//    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-mm-dd")
     private LocalDate activationEndDate;
 
-    @NotNull(message = "Last Modified By User ID is required")
-    private Long lastModifiedByUserID;
 
     @NotNull(message = "Max No Of Users is required")
     private Long maxNoOfUsers;
-
-    public Long getLastModifiedByUserID() {
-        return lastModifiedByUserID;
-    }
-
-    public void setLastModifiedByUserID(Long lastModifiedByUserID) {
-        this.lastModifiedByUserID = lastModifiedByUserID;
-    }
 
     public String getName() {
         return name;

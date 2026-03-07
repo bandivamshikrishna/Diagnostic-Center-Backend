@@ -41,7 +41,7 @@ public class VendorMapper {
         vendorResponseDTO.setName(vendorEntity.getName());
         vendorResponseDTO.setEmail(vendorEntity.getEmail());
         vendorResponseDTO.setPhoneNumber(vendorEntity.getPhoneNumber());
-        vendorResponseDTO.setCreatedDate(vendorEntity.getCreatedDate().toString());
+        vendorResponseDTO.setCreatedDate(vendorEntity.getCreatedDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")));
         vendorResponseDTO.setActivationEndDate(vendorEntity.getActivationEndDate().toString());
         vendorResponseDTO.setVendorCode(vendorEntity.getVendorCode());
         return vendorResponseDTO;
@@ -58,7 +58,7 @@ public class VendorMapper {
         vendorResponseDTO.setAddress(vendorEntity.getAddress());
         vendorResponseDTO.setLogoFolderPath(vendorEntity.getLogoFolderPath());
         vendorResponseDTO.setCreatedBy(vendorEntity.getCreatedByUserID().getUsername());
-        vendorResponseDTO.setCreatedDate(vendorEntity.getCreatedDate().toString());
+        vendorResponseDTO.setCreatedDate(vendorEntity.getCreatedDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")));
         vendorResponseDTO.setActive(vendorEntity.isActive());
         vendorResponseDTO.setActivationEndDate(vendorEntity.getActivationEndDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")));
         vendorResponseDTO.setMaxNoOfUsers(vendorEntity.getMaxNoOfUsers());
@@ -79,6 +79,7 @@ public class VendorMapper {
         vendorEntity.setActive(vendorUpdateRequestDTO.isActive());
         vendorEntity.setActivationEndDate(vendorUpdateRequestDTO.getActivationEndDate());
         vendorEntity.setMaxNoOfUsers(vendorUpdateRequestDTO.getMaxNoOfUsers());
+        vendorEntity.setPhoneNumber(vendorUpdateRequestDTO.getPhoneNumber());
     }
 
 

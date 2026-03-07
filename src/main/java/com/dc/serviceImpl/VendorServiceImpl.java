@@ -78,9 +78,10 @@ public class VendorServiceImpl implements VendorService {
     }
 
     @Override
-    public String updateVendorById(long id, VendorUpdateRequestDTO vendorUpdateRequestDTO) {
-        UserAuthEntity lastModifiedByUserID = userAuthRepository.findById(vendorUpdateRequestDTO.getLastModifiedByUserID()).orElseThrow(
-                () -> new UserException("lastModifiedByUserID",String.format("User Not Found with ID : %d", vendorUpdateRequestDTO.getLastModifiedByUserID())));
+    public String updateVendorById(long id, VendorUpdateRequestDTO vendorUpdateRequestDTO, MultipartFile logo,
+                                   UserAuthEntity userAuthEntity,String uuid) {
+        UserAuthEntity lastModifiedByUserID = userAuthRepository.findById(userAuthEntity.getId()).orElseThrow(
+                () -> new UserException("lastModifiedByUserID",String.format("User Not Found with ID : %d", userAuthEntity.getId())));
 
         VendorEntity vendorEntity = vendorRepository.findById(id).orElseThrow(
                 () -> new VendorException("ID",String.format("Vendor with ID : %d is not Found", id))
@@ -92,6 +93,7 @@ public class VendorServiceImpl implements VendorService {
         if(vendorRepository.existsByPhoneNumberAndIdNot(vendorUpdateRequestDTO.getPhoneNumber(), id))
             throw new VendorException("phoneNumber",String.format("Vendor Already Exists with Phone Number : %s", vendorUpdateRequestDTO.getPhoneNumber()));
         VendorMapper.fromUpdateDTOToEntity(vendorEntity,vendorUpdateRequestDTO);
+        vendorEntity.setUuid(uuid);
         vendorEntity.setLastModifiedByUserID(lastModifiedByUserID);
         vendorEntity.setLastModifiedDate(LocalDateTime.now());
         vendorEntity.setEmail(vendorEntity.getEmail().toLowerCase());
@@ -155,6 +157,29 @@ public class VendorServiceImpl implements VendorService {
         return "Tests Updated successfully";
     }
 
+    @Override
+    public List<Map<String, String>> getListOfVendors() {
+        return vendorRepository.findAll().stream().map(vendor->{
+            Map<String, String> map= new HashMap<>();
+            map.put("name", vendor.getVendorCode());
+            map.put("value", vendor.getName());
+            return map;
+        }).toList();
+
+    }
+
+    @Override
+    public List<Map<String, String>> getVendorBranches(String vendorCode) {
+        VendorEntity vendorEntity = vendorRepository.findByVendorCode(vendorCode).orElseThrow(
+                () -> new VendorException("vendor", String.format("Invalid Vendor Code %s", vendorCode))
+        );
+        return vendorEntity.getBranches().stream().map(branch ->{
+            Map<String, String> map = new HashMap<>();
+            map.put("name", branch.getBranchCode());
+            map.put("value", branch.getBranchName());
+            return map;
+        }).toList();
+    }
 
 
     public void validateVendorBranches(List<VendorBranchDTO> vendorBranchDTO){

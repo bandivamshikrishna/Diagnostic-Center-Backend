@@ -5,11 +5,15 @@ import com.dc.dto.UserCreateRequestDTO;
 import com.dc.dto.UserLoginRequestDTO;
 import com.dc.dto.UserResponseDTO;
 import com.dc.entity.UserAuthEntity;
+import com.dc.entity.UserRoleEntity;
+import com.dc.entity.VendorBranchEntity;
 import com.dc.entity.VendorEntity;
 import com.dc.enums.TokenTypeEnum;
 import com.dc.exception.*;
 import com.dc.mapper.UserAuthMapper;
 import com.dc.repository.UserAuthRepository;
+import com.dc.repository.UserRoleRepository;
+import com.dc.repository.VendorBranchRepository;
 import com.dc.repository.VendorRepository;
 import com.dc.service.UserAuthService;
 import com.dc.service.UserAuthTokenService;
@@ -25,6 +29,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class UserAuthServiceImpl implements UserAuthService, UserDetailsService {
@@ -35,6 +42,8 @@ public class UserAuthServiceImpl implements UserAuthService, UserDetailsService 
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JWTUtils jwtUtils;
+    private final VendorBranchRepository vendorBranchRepository;
+    private final UserRoleRepository userRoleRepository;
 
     @Value("${password.setOrReset.token.expiration}")
     private Long passwordExpirationMinutes;
@@ -45,7 +54,8 @@ public class UserAuthServiceImpl implements UserAuthService, UserDetailsService 
 
     public UserAuthServiceImpl(UserAuthRepository userAuthRepository,VendorRepository vendorRepository,
                                UserAuthTokenService userAuthTokenService,PasswordEncoder passwordEncoder,
-                               AuthenticationManager authenticationManager, JWTUtils jwtUtils
+                               AuthenticationManager authenticationManager, JWTUtils jwtUtils,
+                               VendorBranchRepository vendorBranchRepository, UserRoleRepository userRoleRepository
                                ){
         this.userAuthRepository = userAuthRepository;
         this.vendorRepository = vendorRepository;
@@ -53,32 +63,45 @@ public class UserAuthServiceImpl implements UserAuthService, UserDetailsService 
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.jwtUtils = jwtUtils;
+        this.vendorBranchRepository = vendorBranchRepository;
+        this.userRoleRepository = userRoleRepository;
     }
 
     @Override
-    public String createUser(UserCreateRequestDTO userCreateRequestDTO) {
+    public String createUser(UserCreateRequestDTO userCreateRequestDTO, UserAuthEntity createdBy) {
         if(userAuthRepository.existsByEmail(userCreateRequestDTO.getEmail().toLowerCase().trim()))
             throw new UserException("email",String.format("User Already with Email ID : %s", userCreateRequestDTO.getEmail()));
 
-        VendorEntity vendor = vendorRepository.findById(userCreateRequestDTO.getVendorID()).orElseThrow(
-                () -> new VendorException("vendorID",String.format("Vendor Not Found with ID : %d", userCreateRequestDTO.getVendorID()))
+        VendorEntity vendor = vendorRepository.findByVendorCode(userCreateRequestDTO.getVendor()).orElseThrow(
+                () -> new VendorException("vendorID",String.format("Vendor Not Found with ID : %s", userCreateRequestDTO.getVendor()))
         );
 
-        UserAuthEntity createdByUserID = userAuthRepository.findById(userCreateRequestDTO.getCreatedByUserID()).orElseThrow(
-                () -> new UserException("createdByUserID",String.format("User Not Found with ID : %d", userCreateRequestDTO.getCreatedByUserID()))
+        VendorBranchEntity vendorBranch = vendorBranchRepository.findByBranchCode(userCreateRequestDTO.getVendorBranch()).orElseThrow(
+                ()-> new VendorException("branch", String.format("Branch Not Found with Code : %s", userCreateRequestDTO.getVendorBranch()))
+        );
+
+        UserRoleEntity userRole = userRoleRepository.findByRoleCode(userCreateRequestDTO.getRole()).orElseThrow(
+                () -> new RoleNotFoundException("Invalid Role")
+        );
+
+        UserAuthEntity createdByUserID = userAuthRepository.findById(createdBy.getId()).orElseThrow(
+                () -> new UserException("createdByUserID",String.format("User Not Found with ID : %d", createdBy.getId()))
         );
 
         UserAuthEntity userAuthEntity = UserAuthMapper.fromCreateDTOToEntity(userCreateRequestDTO);
-        userAuthEntity.setEmail(userAuthEntity.getEmail().toLowerCase());
+        userAuthEntity.setEmail(userCreateRequestDTO.getEmail().toLowerCase());
         userAuthEntity.setVendorID(vendor);
+        userAuthEntity.setVendorBranch(vendorBranch);
+        userAuthEntity.setRole(userRole);
         userAuthEntity.setCreatedByUserID(createdByUserID);
         userAuthEntity.setActive(true);
         userAuthEntity.setLocked(true);
         userAuthEntity.setCreatedDate(LocalDate.now());
-        Long id = userAuthRepository.save(userAuthEntity).getId();
-        userAuthTokenService.createToken(userAuthEntity,null,
+        userAuthEntity.setUserCode("U"+String.format("%010d", userAuthRepository.getNextUserCode()));
+        String id = userAuthRepository.save(userAuthEntity).getUserCode();
+        userAuthTokenService.createToken(userAuthEntity,"",
                 TokenTypeEnum.SET_OR_RESET_PASSWORD_TOKEN, passwordExpirationMinutes);
-        return String.format("User Created Successfully with ID : %d",id);
+        return String.format("User Created Successfully with ID : %s",id);
     }
 
     @Override
@@ -111,15 +134,24 @@ public class UserAuthServiceImpl implements UserAuthService, UserDetailsService 
 
     @Override
     public UserResponseDTO getUserDetails(@AuthenticationPrincipal UserAuthEntity userAuthEntity) {
-        UserResponseDTO userResponseDTO = UserAuthMapper.fromEntityToDTO(userAuthEntity);
-        return userResponseDTO;
+        return UserAuthMapper.fromEntityToDTO(userAuthEntity);
+    }
+
+    @Override
+    public List<Map<String, String>> getUserRoles() {
+        return userRoleRepository.findByRoleCodeNot("AD").stream().map(role ->{
+            Map<String, String> map = new HashMap<>();
+            map.put("name", role.getRoleCode());
+            map.put("value", role.getRoleName());
+            return map;
+        }).toList();
     }
 
 
     @Override
     public UserAuthEntity loadUserByUsername(String email) throws GenericException {
         return userAuthRepository.findByEmail(email).orElseThrow(
-                ()-> new UserException("email",String.format("User Not Found with Email : %s", email))
+                ()-> new UserException("message",String.format("User Not Found with Email : %s", email))
         );
     }
 }

@@ -6,18 +6,21 @@ import jakarta.validation.constraints.NotNull;
 
 public class UserCreateRequestDTO {
 
+    @NotBlank(message = "Full Name is required")
+    private String fullName;
+
     @Email
     @NotBlank(message = "Email is required")
     public String email;
 
-    @NotNull(message = "Role ID is required")
-    private Long roleID;
+    @NotNull(message = "Role is required")
+    private String role;
 
-    @NotNull(message = "Vendor ID is required")
-    private Long vendorID;
+    @NotNull(message = "Vendor is required")
+    private String  vendor;
 
-    @NotNull(message = "Created By User ID is required")
-    private Long createdByUserID;
+   @NotNull(message = "Vendor Branch is required")
+   private String vendorBranch;
 
 
     public String getEmail() {
@@ -28,27 +31,36 @@ public class UserCreateRequestDTO {
         this.email = email;
     }
 
-    public Long getRoleID() {
-        return roleID;
+    public String getRole() {
+        return role;
     }
 
-    public void setRoleID(Long roleID) {
-        this.roleID = roleID;
+    public void setRole(String role) {
+        this.role = role;
     }
 
-    public Long getVendorID() {
-        return vendorID;
+    public String getVendor() {
+        return vendor;
     }
 
-    public void setVendorID(Long vendorID) {
-        this.vendorID = vendorID;
+    public void setVendor(String vendor) {
+        this.vendor = vendor;
     }
 
-    public Long getCreatedByUserID() {
-        return createdByUserID;
+    public String getVendorBranch() {
+        return vendorBranch;
     }
 
-    public void setCreatedByUserID(Long createdByUserID) {
-        this.createdByUserID = createdByUserID;
+    public void setVendorBranch(String vendorBranch) {
+        this.vendorBranch = vendorBranch;
+    }
+
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
 }

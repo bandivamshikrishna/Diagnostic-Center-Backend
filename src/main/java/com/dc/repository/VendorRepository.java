@@ -5,14 +5,16 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface VendorRepository extends JpaRepository<VendorEntity, Long> {
-    public Boolean existsByEmail(String email);
-    public Boolean existsByPhoneNumber(String phoneNumber);
-    public VendorEntity findByEmail(String email);
-    public Boolean existsByEmailAndIdNot(String email, Long id);
-    public Boolean existsByPhoneNumberAndIdNot(String phoneNumber, Long id);
-
+    Boolean existsByEmail(String email);
+    Boolean existsByPhoneNumber(String phoneNumber);
+    VendorEntity findByEmail(String email);
+    Boolean existsByEmailAndIdNot(String email, Long id);
+    Boolean existsByPhoneNumberAndIdNot(String phoneNumber, Long id);
+    Optional<VendorEntity> findByVendorCode(String vendorCode);
     @Query(value = "select nextVal('vendor_code_seq')", nativeQuery = true)
-    public Long getNextVendorCode();
+     Long getNextVendorCode();
 }

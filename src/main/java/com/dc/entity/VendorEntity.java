@@ -2,12 +2,12 @@ package com.dc.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
+import org.hibernate.envers.Audited;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
-
+@Audited
 @Entity(name = "tbl_vendor_details")
 public class VendorEntity {
 
@@ -47,13 +47,11 @@ public class VendorEntity {
     @JoinColumn(name = "last_modified_by_user_id", referencedColumnName = "id")
     private UserAuthEntity lastModifiedByUserID;
 
-    @Column(nullable = true)
     private LocalDateTime lastModifiedDate;
 
     @Column(nullable = false, name = "is_active")
     private Boolean active;
 
-    @Column(nullable = true)
     private LocalDate activationEndDate;
 
     @Column(nullable = false)
@@ -81,9 +79,6 @@ public class VendorEntity {
         return this.id;
     }
 
-    public String getUuid() {
-        return uuid;
-    }
 
     public void setUuid(String uuid) {
         this.uuid = uuid;

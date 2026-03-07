@@ -1,6 +1,5 @@
 package com.dc.config;
 
-import com.dc.repository.APILoggingRepository;
 import com.dc.repository.UserAuthTokenRepository;
 import com.dc.serviceImpl.UserAuthServiceImpl;
 import com.dc.utils.*;
@@ -61,12 +60,10 @@ public class UserAuthConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, AuthenticationManager authenticationManager,
                                                    JWTUtils jwtUtils, LogoutHandler logoutHandler,
-                                                   UserAuthTokenRepository userAuthTokenRepository,
-                                                   APILoggingRepository apiLoggingRepository) throws Exception {
+                                                   UserAuthTokenRepository userAuthTokenRepository) throws Exception {
 
         JWTValidationFilter jwtValidationFilter = new JWTValidationFilter(authenticationManager);
         JWTRefreshFilter jwtRefreshFilter = new JWTRefreshFilter(authenticationManager,jwtUtils,userAuthTokenRepository);
-        APILoggingFilter apiLoggingFilter = new APILoggingFilter(apiLoggingRepository);
 
 
         return  http
@@ -83,7 +80,6 @@ public class UserAuthConfig {
                 .sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtValidationFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterAfter(jwtRefreshFilter, JWTValidationFilter.class)
-                .addFilterAfter(apiLoggingFilter, JWTRefreshFilter.class)
                 .logout(logout -> logout
                         .logoutUrl("/api/user/logout")
                         .addLogoutHandler(logoutHandler)

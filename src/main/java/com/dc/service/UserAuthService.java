@@ -7,10 +7,14 @@ import com.dc.dto.UserResponseDTO;
 import com.dc.entity.UserAuthEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
+import java.util.List;
+import java.util.Map;
+
 public interface UserAuthService {
-    public String createUser(UserCreateRequestDTO userCreateRequestDTO);
-    public void setUserPassword(String token,String password);
-    public JWTTokens loginUser(UserLoginRequestDTO userLoginRequestDTO);
-    public UserResponseDTO getUserDetails(@AuthenticationPrincipal UserAuthEntity userAuthEntity);
+    String createUser(UserCreateRequestDTO userCreateRequestDTO, UserAuthEntity userAuthEntity);
+    void setUserPassword(String token,String password);
+    JWTTokens loginUser(UserLoginRequestDTO userLoginRequestDTO);
+    UserResponseDTO getUserDetails(@AuthenticationPrincipal UserAuthEntity userAuthEntity);
+    List<Map<String, String>> getUserRoles();
 }
 

@@ -12,8 +12,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/user")
@@ -31,8 +34,10 @@ public class UserAuthController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<String> createUser(@Valid @RequestBody UserCreateRequestDTO userCreateRequestDTO){
-        return new ResponseEntity<>(userAuthService.createUser(userCreateRequestDTO), HttpStatus.CREATED);
+    public ResponseEntity<Map<String,String>> createUser(@Valid @RequestBody UserCreateRequestDTO userCreateRequestDTO, @AuthenticationPrincipal UserAuthEntity userAuthEntity){
+        Map<String,String> map = new HashMap<>();
+        map.put("message", userAuthService.createUser(userCreateRequestDTO, userAuthEntity));
+        return new ResponseEntity<>(map, HttpStatus.CREATED);
     }
 
     @GetMapping("/validate-token")
@@ -65,5 +70,10 @@ public class UserAuthController {
     @GetMapping("/me")
     public ResponseEntity<UserResponseDTO> getUserDetails(@AuthenticationPrincipal UserAuthEntity userAuthEntity){
         return new ResponseEntity<>(userAuthService.getUserDetails(userAuthEntity),HttpStatus.OK);
+    }
+
+    @GetMapping("/get-Roles")
+    public ResponseEntity<List<Map<String,String>>> getUserRoles(){
+        return new ResponseEntity<>(userAuthService.getUserRoles(), HttpStatus.OK);
     }
 }

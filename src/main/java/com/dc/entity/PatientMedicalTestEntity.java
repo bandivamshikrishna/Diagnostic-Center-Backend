@@ -2,7 +2,9 @@ package com.dc.entity;
 
 
 import jakarta.persistence.*;
+import org.hibernate.envers.Audited;
 
+@Audited
 @Entity(name = "tbl_patient_medical_test_details")
 public class PatientMedicalTestEntity {
 

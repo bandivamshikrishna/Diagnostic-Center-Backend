@@ -2,9 +2,11 @@ package com.dc.entity;
 
 import com.dc.enums.TokenTypeEnum;
 import jakarta.persistence.*;
+import org.hibernate.envers.Audited;
 
 import java.time.LocalDateTime;
 
+@Audited
 @Entity(name = "tbl_user_token_details")
 public class UserAuthTokenEntity {
 

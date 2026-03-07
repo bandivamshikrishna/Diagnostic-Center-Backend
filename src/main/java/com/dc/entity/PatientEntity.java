@@ -4,12 +4,13 @@ import com.dc.enums.PatientStatusEnum;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
+import org.hibernate.envers.Audited;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Date;
 import java.util.List;
-
+@Audited
 @Entity(name = "tbl_patient_details")
 public class PatientEntity {
 
