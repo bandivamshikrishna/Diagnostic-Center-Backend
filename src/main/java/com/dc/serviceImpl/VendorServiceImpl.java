@@ -58,7 +58,7 @@ public class VendorServiceImpl implements VendorService {
     }
 
     @Override
-    public List<VendorListResponseDTO> getAllActiveVendors() {
+    public List<VendorListResponseDTO> getAllVendors() {
         List<VendorEntity> vendorEntities = vendorRepository.findAll();
         List<VendorListResponseDTO> vendorResponses = new ArrayList<>();
 

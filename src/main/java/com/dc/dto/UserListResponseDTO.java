@@ -2,9 +2,10 @@ package com.dc.dto;
 
 public class UserListResponseDTO {
     private String userCode;
-    private String userFullName;
+    private String fullName;
     private String email;
     private String role;
+    private Long id;
 
 
     public String getUserCode() {
@@ -15,12 +16,12 @@ public class UserListResponseDTO {
         this.userCode = userCode;
     }
 
-    public String getUserFullName() {
-        return userFullName;
+    public String getFullName() {
+        return fullName;
     }
 
-    public void setUserFullName(String userFullName) {
-        this.userFullName = userFullName;
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
 
     public String getEmail() {
@@ -37,5 +38,13 @@ public class UserListResponseDTO {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 }

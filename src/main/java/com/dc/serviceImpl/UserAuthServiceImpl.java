@@ -1,9 +1,6 @@
 package com.dc.serviceImpl;
 
-import com.dc.dto.JWTTokens;
-import com.dc.dto.UserCreateRequestDTO;
-import com.dc.dto.UserLoginRequestDTO;
-import com.dc.dto.UserResponseDTO;
+import com.dc.dto.*;
 import com.dc.entity.UserAuthEntity;
 import com.dc.entity.UserRoleEntity;
 import com.dc.entity.VendorBranchEntity;
@@ -18,7 +15,11 @@ import com.dc.repository.VendorRepository;
 import com.dc.service.UserAuthService;
 import com.dc.service.UserAuthTokenService;
 import com.dc.utils.JWTUtils;
+import com.dc.utils.UserSpecification;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -29,9 +30,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class UserAuthServiceImpl implements UserAuthService, UserDetailsService {
@@ -72,11 +71,13 @@ public class UserAuthServiceImpl implements UserAuthService, UserDetailsService 
         if(userAuthRepository.existsByEmail(userCreateRequestDTO.getEmail().toLowerCase().trim()))
             throw new UserException("email",String.format("User Already with Email ID : %s", userCreateRequestDTO.getEmail()));
 
-        VendorEntity vendor = vendorRepository.findByVendorCode(userCreateRequestDTO.getVendor()).orElseThrow(
+        VendorEntity vendor = vendorRepository.findByVendorCode(createdBy.getRole().getRoleCode().equalsIgnoreCase("ad") ?
+                userCreateRequestDTO.getVendor() :
+                createdBy.getVendorID().getVendorCode()).orElseThrow(
                 () -> new VendorException("vendorID",String.format("Vendor Not Found with ID : %s", userCreateRequestDTO.getVendor()))
         );
 
-        VendorBranchEntity vendorBranch = vendorBranchRepository.findByBranchCode(userCreateRequestDTO.getVendorBranch()).orElseThrow(
+        VendorBranchEntity vendorBranch = vendorBranchRepository.findByBranchCodeAndVendor_VendorCode(userCreateRequestDTO.getVendorBranch(), userCreateRequestDTO.getVendor()).orElseThrow(
                 ()-> new VendorException("branch", String.format("Branch Not Found with Code : %s", userCreateRequestDTO.getVendorBranch()))
         );
 
@@ -145,6 +146,17 @@ public class UserAuthServiceImpl implements UserAuthService, UserDetailsService 
             map.put("value", role.getRoleName());
             return map;
         }).toList();
+    }
+
+    @Override
+    public PageResponseDTO<UserListResponseDTO> getAllUsers(UserAuthEntity userAuthEntity, String userCode, String name, String email,
+                                                 String roleCode, Date startDate, Date endDate,String filterType, Pageable pageable) {
+
+        Specification<UserAuthEntity> spec = UserSpecification.getUserFilters(userCode,name,email,roleCode,startDate,endDate,filterType);
+
+        Page<UserAuthEntity> page = userAuthRepository.findAll(spec, pageable);
+        List<UserListResponseDTO> userResponses = page.getContent().stream().map(UserAuthMapper::fromEntityToListDTO).toList();
+        return new PageResponseDTO<>(userResponses,page.getNumber(),page.getSize(),page.getTotalElements(),page.getTotalPages(),page.isLast());
     }
 
 

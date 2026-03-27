@@ -9,11 +9,16 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -75,5 +80,28 @@ public class UserAuthController {
     @GetMapping("/get-Roles")
     public ResponseEntity<List<Map<String,String>>> getUserRoles(){
         return new ResponseEntity<>(userAuthService.getUserRoles(), HttpStatus.OK);
+    }
+
+    @GetMapping
+    public ResponseEntity<PageResponseDTO<UserListResponseDTO>> getAllUsers(
+            @RequestParam(name = "filterType", required = false, defaultValue = "1") String filterType,
+            @RequestParam(name = "ID", required = false, defaultValue = "") String userCode,
+            @RequestParam(name = "fullName",required = false, defaultValue = "") String name,
+            @RequestParam(name = "email", required = false, defaultValue = "") String email,
+            @RequestParam(name = "role", required = false, defaultValue = "") String roleCode,
+            @RequestParam(name = "startDate", required = false)
+            @DateTimeFormat(pattern = "dd-MM-yyyy") Date startDate,
+            @RequestParam(name = "endDate", required = false)
+            @DateTimeFormat(pattern = "dd-MM-yyyy") Date endDate,
+            @RequestParam(name = "sortBy", required = false, defaultValue = "id") String sortBy,
+            @RequestParam(name = "sortDirection", required = false, defaultValue = "DESC") String sortDirection,
+            @RequestParam(name = "pageNo", required = false, defaultValue = "1") Integer pageNumber,
+            @RequestParam(name = "pageSize", required = false, defaultValue = "5") Integer pageSize,
+            @AuthenticationPrincipal UserAuthEntity userAuthEntity){
+
+        Sort sort = Sort.by(sortBy);
+        sort = sortDirection.equalsIgnoreCase("DESC") ? sort.descending() : sort.ascending();
+        PageRequest pageRequest = PageRequest.of(pageNumber, pageSize, sort);
+        return new ResponseEntity<>(userAuthService.getAllUsers(userAuthEntity,userCode, name,email,roleCode,startDate,endDate, filterType,pageRequest), HttpStatus.OK);
     }
 }

@@ -62,7 +62,7 @@ public class VendorController {
 
     @GetMapping
     public ResponseEntity<List<VendorListResponseDTO>> getAllVendors(){
-        return new ResponseEntity<>(vendorService.getAllActiveVendors(), HttpStatus.OK);
+        return new ResponseEntity<>(vendorService.getAllVendors(), HttpStatus.OK);
     }
 
     @GetMapping("/drop-down")

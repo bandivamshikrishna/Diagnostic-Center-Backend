@@ -3,7 +3,7 @@ package com.dc.dto;
 public class UserResponseDTO {
     private String email;
     private String role;
-    private String vendorID;
+    private String vendor;
 
     public String getEmail() {
         return email;
@@ -21,11 +21,11 @@ public class UserResponseDTO {
         this.role = role;
     }
 
-    public String getVendorID() {
-        return vendorID;
+    public String getVendor() {
+        return vendor;
     }
 
-    public void setVendorID(String vendorID) {
-        this.vendorID = vendorID;
+    public void setVendor(String vendor) {
+        this.vendor = vendor;
     }
 }

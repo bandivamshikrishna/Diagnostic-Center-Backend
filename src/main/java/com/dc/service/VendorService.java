@@ -10,7 +10,7 @@ import java.util.Map;
 
 public interface VendorService {
     String createVendor(VendorCreateRequestDTO vendorCreateRequestDTO, MultipartFile logo,UserAuthEntity userAuthEntity, String uuid) throws IOException;
-    List<VendorListResponseDTO> getAllActiveVendors();
+    List<VendorListResponseDTO> getAllVendors();
     VendorResponseDTO getVendorById(long id);
     String updateVendorById(long id, VendorUpdateRequestDTO vendorUpdateRequestDTO, MultipartFile logo, UserAuthEntity userAuthEntity,String uuid);
     Long getVendorMaxNoOfUsers(Long id);
