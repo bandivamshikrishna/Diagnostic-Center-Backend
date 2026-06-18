@@ -5,6 +5,7 @@ public class UserListResponseDTO {
     private String fullName;
     private String email;
     private String role;
+    private Boolean active;
     private Long id;
 
 
@@ -38,6 +39,15 @@ public class UserListResponseDTO {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+
+    public Boolean getActive() {
+        return active;
+    }
+
+    public void setActive(Boolean active) {
+        this.active = active;
     }
 
     public Long getId() {

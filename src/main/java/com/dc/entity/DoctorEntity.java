@@ -2,9 +2,13 @@ package com.dc.entity;
 
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.envers.Audited;
 
 @Audited
+@Getter
+@Setter
 @Entity(name = "tbl_doctor_details")
 public class DoctorEntity {
 
@@ -15,19 +19,5 @@ public class DoctorEntity {
     @Column(nullable = false)
     private String name;
 
-    public Long getId() {
-        return id;
-    }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 }

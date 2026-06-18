@@ -2,10 +2,16 @@ package com.dc.repository;
 
 import com.dc.entity.MedicalTestEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface MedicalTestRepository extends JpaRepository<MedicalTestEntity, Long> {
-    public Boolean existsByTestName(String testName);
-    public Boolean existsByTestNameAndIdNot(String testName,Long id);
+public interface MedicalTestRepository extends JpaRepository<MedicalTestEntity, Long> , JpaSpecificationExecutor<MedicalTestEntity> {
+    Boolean existsByTestName(String testName);
+    Boolean existsByTestNameAndIdNot(String testName,Long id);
+    Boolean existsByTestCode(String testCode);
+
+    @Query(value = "select nextVal('test_code_seq')", nativeQuery = true)
+    Long getNextTestCode();
 }

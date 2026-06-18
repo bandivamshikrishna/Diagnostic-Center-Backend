@@ -10,12 +10,16 @@ import java.util.List;
 import java.util.Map;
 
 public interface UserAuthService {
-    String createUser(UserCreateRequestDTO userCreateRequestDTO, UserAuthEntity userAuthEntity);
+    String createUser(UserCreateOrUpdateRequestDTO userCreateRequestDTO, UserAuthEntity userAuthEntity);
     void setUserPassword(String token,String password);
     JWTTokens loginUser(UserLoginRequestDTO userLoginRequestDTO);
-    UserResponseDTO getUserDetails(@AuthenticationPrincipal UserAuthEntity userAuthEntity);
+    UserResponseDTO getLoggedInUserDetails(@AuthenticationPrincipal UserAuthEntity userAuthEntity);
     List<Map<String, String>> getUserRoles();
     PageResponseDTO<UserListResponseDTO> getAllUsers(UserAuthEntity userAuthEntity, String userCode, String name, String email,
                                           String roleCode, Date startDate, Date endDate,String filterType,Pageable pageable);
+    String activateOrDeActivateUser(Long ID);
+    String unLockUser(Long id);
+    String updateUser(UserCreateOrUpdateRequestDTO userUpdateRequestDTO, Long id, UserAuthEntity modifiedBy);
+    UserResponseDTO getSpecificUserDetails(Long id);
 }
 

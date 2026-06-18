@@ -19,4 +19,6 @@ public interface UserAuthRepository extends JpaRepository<UserAuthEntity,Long>, 
 
      @Query(value = "select nextVal('user_code_seq')", nativeQuery = true)
      Long getNextUserCode();
+
+     Boolean existsByEmailAndIdNot(String email, Long id);
 }

@@ -8,9 +8,9 @@ import com.dc.service.UserAuthTokenService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/user")
 public class UserAuthController {
 
@@ -33,13 +34,8 @@ public class UserAuthController {
     private final UserAuthService userAuthService;
     private final UserAuthTokenService userAuthTokenService;
 
-    public UserAuthController(UserAuthService userAuthService,UserAuthTokenService userAuthTokenService){
-        this.userAuthService = userAuthService;
-        this.userAuthTokenService = userAuthTokenService;
-    }
-
     @PostMapping("/create")
-    public ResponseEntity<Map<String,String>> createUser(@Valid @RequestBody UserCreateRequestDTO userCreateRequestDTO, @AuthenticationPrincipal UserAuthEntity userAuthEntity){
+    public ResponseEntity<Map<String,String>> createUser(@Valid @RequestBody UserCreateOrUpdateRequestDTO userCreateRequestDTO, @AuthenticationPrincipal UserAuthEntity userAuthEntity){
         Map<String,String> map = new HashMap<>();
         map.put("message", userAuthService.createUser(userCreateRequestDTO, userAuthEntity));
         return new ResponseEntity<>(map, HttpStatus.CREATED);
@@ -73,8 +69,8 @@ public class UserAuthController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<UserResponseDTO> getUserDetails(@AuthenticationPrincipal UserAuthEntity userAuthEntity){
-        return new ResponseEntity<>(userAuthService.getUserDetails(userAuthEntity),HttpStatus.OK);
+    public ResponseEntity<UserResponseDTO> getLoggedInUserDetails(@AuthenticationPrincipal UserAuthEntity userAuthEntity){
+        return new ResponseEntity<>(userAuthService.getLoggedInUserDetails(userAuthEntity),HttpStatus.OK);
     }
 
     @GetMapping("/get-Roles")
@@ -103,5 +99,38 @@ public class UserAuthController {
         sort = sortDirection.equalsIgnoreCase("DESC") ? sort.descending() : sort.ascending();
         PageRequest pageRequest = PageRequest.of(pageNumber, pageSize, sort);
         return new ResponseEntity<>(userAuthService.getAllUsers(userAuthEntity,userCode, name,email,roleCode,startDate,endDate, filterType,pageRequest), HttpStatus.OK);
+    }
+
+
+    @PostMapping("/activateOrDeactivate/{id}")
+    public ResponseEntity<Map<String,String>> activateOrDeactivateUser(@PathVariable("id") Long id){
+
+        Map<String,String> map = new HashMap<>();
+        map.put("message", userAuthService.activateOrDeActivateUser(id));
+        return new ResponseEntity<>(map,HttpStatus.OK);
+    }
+
+
+    @PostMapping("/unLock/{id}")
+    public ResponseEntity<Map<String,String>> unLockUser(@PathVariable("id") Long id){
+        Map<String, String> map = new HashMap<>();
+        map.put("message", userAuthService.unLockUser(id));
+        return new ResponseEntity<>(map,HttpStatus.OK);
+    }
+
+
+    @GetMapping("/{id}")
+    public ResponseEntity<UserResponseDTO> getSpecificUserDetails(@PathVariable("id") Long id){
+        return new ResponseEntity<>(userAuthService.getSpecificUserDetails(id), HttpStatus.OK);
+    }
+
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity<Map<String,String>> updateUser(@Valid @RequestBody UserCreateOrUpdateRequestDTO userUpdateRequestDTO,
+                                                         @PathVariable("id") Long id,
+                                                         @AuthenticationPrincipal UserAuthEntity userAuthEntity){
+        Map<String,String> map = new HashMap<>();
+        map.put("message",userAuthService.updateUser(userUpdateRequestDTO,id,userAuthEntity));
+        return new ResponseEntity<>(map,HttpStatus.OK);
     }
 }

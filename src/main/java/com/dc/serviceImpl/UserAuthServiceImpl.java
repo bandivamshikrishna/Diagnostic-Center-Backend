@@ -67,7 +67,7 @@ public class UserAuthServiceImpl implements UserAuthService, UserDetailsService 
     }
 
     @Override
-    public String createUser(UserCreateRequestDTO userCreateRequestDTO, UserAuthEntity createdBy) {
+    public String createUser(UserCreateOrUpdateRequestDTO userCreateRequestDTO, UserAuthEntity createdBy) {
         if(userAuthRepository.existsByEmail(userCreateRequestDTO.getEmail().toLowerCase().trim()))
             throw new UserException("email",String.format("User Already with Email ID : %s", userCreateRequestDTO.getEmail()));
 
@@ -134,7 +134,7 @@ public class UserAuthServiceImpl implements UserAuthService, UserDetailsService 
     }
 
     @Override
-    public UserResponseDTO getUserDetails(@AuthenticationPrincipal UserAuthEntity userAuthEntity) {
+    public UserResponseDTO getLoggedInUserDetails(@AuthenticationPrincipal UserAuthEntity userAuthEntity) {
         return UserAuthMapper.fromEntityToDTO(userAuthEntity);
     }
 
@@ -157,6 +157,72 @@ public class UserAuthServiceImpl implements UserAuthService, UserDetailsService 
         Page<UserAuthEntity> page = userAuthRepository.findAll(spec, pageable);
         List<UserListResponseDTO> userResponses = page.getContent().stream().map(UserAuthMapper::fromEntityToListDTO).toList();
         return new PageResponseDTO<>(userResponses,page.getNumber(),page.getSize(),page.getTotalElements(),page.getTotalPages(),page.isLast());
+    }
+
+    @Override
+    public String activateOrDeActivateUser(Long ID) {
+        UserAuthEntity userAuthEntity = userAuthRepository.findById(ID).
+                orElseThrow(()-> new UserException("ID", String.format("User Not found with ID %d", ID)));
+
+        userAuthEntity.setActive(!userAuthEntity.isEnabled());
+        userAuthRepository.save(userAuthEntity);
+        return "User Updated Successfully";
+    }
+
+    @Override
+    public String unLockUser(Long id) {
+        UserAuthEntity userAuthEntity = userAuthRepository.findById(id).orElseThrow(
+                ()-> new UserException("message", String.format("User Not Found with ID %d", id))
+        );
+        userAuthEntity.setLocked(false);
+        userAuthRepository.save(userAuthEntity);
+        return "User Unlocked Successfully";
+    }
+
+    @Override
+    public String updateUser(UserCreateOrUpdateRequestDTO userUpdateRequestDTO, Long id, UserAuthEntity modifiedBy) {
+        UserAuthEntity userAuthEntity = userAuthRepository.findById(id).orElseThrow(
+                () -> new UserException("message", String.format("User Not Found with ID %d", id))
+        );
+
+        if(userAuthRepository.existsByEmailAndIdNot(userUpdateRequestDTO.getEmail().toLowerCase().trim(), id))
+            throw new UserException("email",String.format("User Already with Email ID : %s", userUpdateRequestDTO.getEmail()));
+
+        VendorEntity vendor = vendorRepository.findByVendorCode(modifiedBy.getRole().getRoleCode().equalsIgnoreCase("ad") ?
+                userUpdateRequestDTO.getVendor() :
+                modifiedBy.getVendorID().getVendorCode()).orElseThrow(
+                () -> new VendorException("vendorID",String.format("Vendor Not Found with ID : %s", userUpdateRequestDTO.getVendor()))
+        );
+
+        VendorBranchEntity vendorBranch = vendorBranchRepository.findByBranchCodeAndVendor_VendorCode(userUpdateRequestDTO.getVendorBranch(), userUpdateRequestDTO.getVendor()).orElseThrow(
+                ()-> new VendorException("branch", String.format("Branch Not Found with Code : %s", userUpdateRequestDTO.getVendorBranch()))
+        );
+
+        UserRoleEntity userRole = userRoleRepository.findByRoleCode(userUpdateRequestDTO.getRole()).orElseThrow(
+                () -> new RoleNotFoundException("Invalid Role")
+        );
+
+        UserAuthEntity modifiedByUserID = userAuthRepository.findById(modifiedBy.getId()).orElseThrow(
+                () -> new UserException("createdByUserID",String.format("User Not Found with ID : %d", modifiedBy.getId()))
+        );
+
+        userAuthEntity.setFullName(userUpdateRequestDTO.getFullName());
+        userAuthEntity.setEmail(userUpdateRequestDTO.getEmail());
+        userAuthEntity.setRole(userRole);
+        userAuthEntity.setVendorID(vendor);
+        userAuthEntity.setVendorBranch(vendorBranch);
+        userAuthEntity.setLastModifiedByUserID(modifiedByUserID);
+        userAuthEntity.setLastModifiedDate(LocalDate.now());
+        userAuthRepository.save(userAuthEntity);
+        return  String.format("User Updated Successfully with ID : %s",userAuthEntity.getUserCode());
+    }
+
+    @Override
+    public UserResponseDTO getSpecificUserDetails(Long id) {
+        UserAuthEntity userAuthEntity = userAuthRepository.findById(id).orElseThrow(
+                () -> new UserException("message", String.format("User Not Found with ID %d", id))
+        );
+        return UserAuthMapper.fromEntityToDTO(userAuthEntity);
     }
 
 

@@ -48,6 +48,12 @@ public class UserAuthEntity implements UserDetails {
     @Column(nullable = false)
     private LocalDate createdDate;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "last_modified_by_user_id",referencedColumnName = "id")
+    private UserAuthEntity lastModifiedByUserID;
+
+    private LocalDate lastModifiedDate;
+
     @Column(name = "is_active",nullable = false)
     private Boolean active;
 
@@ -201,5 +207,22 @@ public class UserAuthEntity implements UserDetails {
 
     public void setFullName(String fullName) {
         this.fullName = fullName;
+    }
+
+
+    public UserAuthEntity getLastModifiedByUserID() {
+        return lastModifiedByUserID;
+    }
+
+    public void setLastModifiedByUserID(UserAuthEntity lastModifiedByUserID) {
+        this.lastModifiedByUserID = lastModifiedByUserID;
+    }
+
+    public LocalDate getLastModifiedDate() {
+        return lastModifiedDate;
+    }
+
+    public void setLastModifiedDate(LocalDate lastModifiedDate) {
+        this.lastModifiedDate = lastModifiedDate;
     }
 }

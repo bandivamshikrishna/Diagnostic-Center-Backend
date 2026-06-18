@@ -1,6 +1,7 @@
 package com.dc.utils;
 
 import com.dc.config.UserAuthConfig;
+import com.dc.exception.TokenException;
 import com.dc.repository.UserAuthTokenRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -37,11 +38,18 @@ public class JWTValidationFilter extends OncePerRequestFilter {
 
         if(token != null) {
         JWTAuthenticationToken jwtAuthenticationToken = new JWTAuthenticationToken(token);
-        Authentication authentication = authenticationManager.authenticate(jwtAuthenticationToken);
-        if (authentication.isAuthenticated())
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-
+        try {
+            Authentication authentication = authenticationManager.authenticate(jwtAuthenticationToken);
+            if (authentication.isAuthenticated())
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            }
+            catch(TokenException e){
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.getWriter().write("{\"message\":\"Invalid Token\"}");
+                return;
+            }
         }
+
 
         filterChain.doFilter(request,response);
     }

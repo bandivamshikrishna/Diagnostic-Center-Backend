@@ -4,6 +4,7 @@ import com.dc.dto.*;
 import com.dc.entity.UserAuthEntity;
 import com.dc.service.VendorService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -18,13 +19,10 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/admin/vendor")
+@RequiredArgsConstructor
 public class VendorController {
 
     private final VendorService vendorService;
-
-    public VendorController(VendorService vendorService){
-        this.vendorService = vendorService;
-    }
 
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

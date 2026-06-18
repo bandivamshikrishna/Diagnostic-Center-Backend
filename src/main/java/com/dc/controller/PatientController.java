@@ -9,6 +9,7 @@ import com.dc.validators.FinalValidation;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -20,16 +21,13 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Set;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/patient")
 public class PatientController {
 
     private final PatientService patientService;
     private final Validator validator;
 
-    public PatientController(Validator validator,PatientService patientService){
-        this.validator = validator;
-        this.patientService = patientService;
-    }
 
     @PostMapping()
     public ResponseEntity<String> createPatient(@RequestBody @Validated PatientCreateRequestDTO patientCreateRequestDTO){

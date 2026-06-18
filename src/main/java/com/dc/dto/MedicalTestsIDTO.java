@@ -1,14 +1,10 @@
 package com.dc.dto;
 
 
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
 public class MedicalTestsIDTO{
     private Long id;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 }

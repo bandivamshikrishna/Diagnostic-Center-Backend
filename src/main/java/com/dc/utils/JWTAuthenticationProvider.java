@@ -24,7 +24,7 @@ public class JWTAuthenticationProvider implements AuthenticationProvider {
         String token = ((JWTAuthenticationToken) authentication).getToken();
         String email = jwtUtils.getEmailFromToken(token);
         if(email == null){
-            throw  new TokenException("jwt token","Invalid JWT Token");
+            throw new TokenException("jwt token","Invalid JWT Token");
         }
 
         UserAuthEntity userAuthEntity = userAuthService.loadUserByUsername(email);

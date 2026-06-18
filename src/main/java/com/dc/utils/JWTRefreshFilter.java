@@ -38,19 +38,26 @@ public class JWTRefreshFilter extends OncePerRequestFilter {
         }
 
         String refreshToken = getRefreshTokenFromCookie(request);
-        if(refreshToken == null)
-            throw  new TokenException("jwt Token","JWT Refresh Token is Missing");
+        if(refreshToken == null) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("{\"message\":\"Invalid Token\"}");
+            return;
+        }
 
         Boolean isValidToken = userAuthTokenRepository.findByToken(refreshToken)
                 .map(t->!t.getTokenRevoked()).orElse(false);
-        if(!isValidToken)
-            throw new TokenException("token","Token Expired..");
+        if(!isValidToken){
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("{\"message\":\"Invalid Token\"}");
+            return;
+        }
 
         JWTAuthenticationToken jwtAuthenticationToken = new JWTAuthenticationToken(refreshToken);
         Authentication authentication = authenticationManager.authenticate(jwtAuthenticationToken);
         if (authentication.isAuthenticated()){
             String accessToken = jwtUtils.generateToken(authentication.getName(),true);
             response.setHeader("Authorization","Bearer "+accessToken);
+            response.setStatus(HttpServletResponse.SC_OK);
         }
     }
 
