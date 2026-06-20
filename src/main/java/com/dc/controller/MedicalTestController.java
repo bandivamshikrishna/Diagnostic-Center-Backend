@@ -27,30 +27,13 @@ public class MedicalTestController {
     private final MedicalTestService medicalTestService;
 
 
-    @GetMapping("/lovs/departments")
-    public ResponseEntity<List<Map<String,String>>> getMedicalTestDepartments(){
-        return new ResponseEntity<>(medicalTestService.getMedicalTestDepartments(),HttpStatus.OK);
+    @GetMapping("/lovs")
+    public ResponseEntity<List<Map<String,String>>> getMedicalTestLovs(
+            @RequestParam(name = "type", required = true, defaultValue = "DEPARTMENT") String type){
+
+        return new ResponseEntity<>(medicalTestService.getMedicalTestLovs(type),HttpStatus.OK);
     }
 
-    @GetMapping("/lovs/categories")
-    public ResponseEntity<List<Map<String,String>>> getMedicalTestCategories(){
-        return new ResponseEntity<>(medicalTestService.getMedicalTestCategories(),HttpStatus.OK);
-    }
-
-    @GetMapping("/lovs/methods")
-    public ResponseEntity<List<Map<String,String>>> getMedicalTestMethods(){
-        return new ResponseEntity<>(medicalTestService.getMedicalTestMethods(),HttpStatus.OK);
-    }
-
-    @GetMapping("/lovs/specimens")
-    public ResponseEntity<List<Map<String,String>>> getMedicalTestSpecimens(){
-        return new ResponseEntity<>(medicalTestService.getMedicalTestSpecimens(),HttpStatus.OK);
-    }
-
-    @GetMapping("/lovs/units")
-    public ResponseEntity<List<Map<String,String>>> getMedicalTestUnits(){
-        return new ResponseEntity<>(medicalTestService.getMedicalTestUnits(),HttpStatus.OK);
-    }
 
     @PostMapping
     public ResponseEntity<Map<String,String>> createMedicalTest(@Valid @RequestBody MedicalTestCreateRequestDTO medicalTestCreateRequestDTO,
@@ -65,13 +48,16 @@ public class MedicalTestController {
         return new ResponseEntity<>(medicalTestService.getMedicalTestByID(id), HttpStatus.OK);
     }
 
-    @PatchMapping("/{id}")
-    public ResponseEntity<String> updateMedicalTestByID(@PathVariable(name = "id") Long id, @Valid @RequestBody MedicalTestUpdateRequestDTO medicalTestUpdateRequestDTO){
-        return new ResponseEntity<>(medicalTestService.updateMedicalTestById(id,medicalTestUpdateRequestDTO),HttpStatus.OK);
+    @PutMapping("/{id}")
+    public ResponseEntity<Map<String,String>> updateMedicalTestByID(@PathVariable(name = "id") Long id, @Valid @RequestBody MedicalTestCreateRequestDTO medicalTestUpdateRequestDTO,
+                                                        @AuthenticationPrincipal UserAuthEntity userAuthEntity){
+        Map<String,String> map = new HashMap<>();
+        map.put("message", medicalTestService.updateMedicalTestById(id,medicalTestUpdateRequestDTO,userAuthEntity));
+        return new ResponseEntity<>(map,HttpStatus.OK);
     }
 
     @GetMapping
-    public ResponseEntity<PageResponseDTO<MedicalTestResponseDTO>> getAllMedicalTests(
+    public ResponseEntity<PageResponseDTO<MedicalTestListResponseDTO>> getAllMedicalTests(
             @RequestParam(name = "filterType", required = false, defaultValue = "1") String filterType,
             @RequestParam(name = "ID", required = false, defaultValue = "") String testCode,
             @RequestParam(name = "testName",required = false, defaultValue = "") String testName,
@@ -83,7 +69,7 @@ public class MedicalTestController {
             @DateTimeFormat(pattern = "dd-MM-yyyy") Date endDate,
             @RequestParam(name = "sortBy", required = false, defaultValue = "id") String sortBy,
             @RequestParam(name = "sortDirection", required = false, defaultValue = "DESC") String sortDirection,
-            @RequestParam(name = "pageNo", required = false, defaultValue = "1") Integer pageNumber,
+            @RequestParam(name = "pageNo", required = false, defaultValue = "0") Integer pageNumber,
             @RequestParam(name = "pageSize", required = false, defaultValue = "5") Integer pageSize,
             @AuthenticationPrincipal UserAuthEntity userAuthEntity){
 
@@ -91,5 +77,14 @@ public class MedicalTestController {
         sort = sortDirection.equalsIgnoreCase("DESC") ? sort.descending() : sort.ascending();
         PageRequest pageRequest = PageRequest.of(pageNumber, pageSize, sort);
         return new ResponseEntity<>(medicalTestService.getAllMedicalTests(userAuthEntity,testCode,testName,category,department,startDate,endDate, filterType,pageRequest), HttpStatus.OK);
+    }
+
+
+    @PostMapping("/activateOrDeactivate/{id}")
+    public ResponseEntity<Map<String,String>> activateOrDeactivateUser(@PathVariable("id") Long id){
+
+        Map<String,String> map = new HashMap<>();
+        map.put("message", medicalTestService.activateOrDeActivateMedicalTest(id));
+        return new ResponseEntity<>(map,HttpStatus.OK);
     }
 }

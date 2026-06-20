@@ -8,8 +8,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface MedicalTestRepository extends JpaRepository<MedicalTestEntity, Long> , JpaSpecificationExecutor<MedicalTestEntity> {
-    Boolean existsByTestName(String testName);
-    Boolean existsByTestNameAndIdNot(String testName,Long id);
+    Boolean existsByTestNameIgnoreCase(String testName);
+    Boolean existsByTestNameIgnoreCaseAndIdNot(String testName,Long id);
     Boolean existsByTestCode(String testCode);
 
     @Query(value = "select nextVal('test_code_seq')", nativeQuery = true)

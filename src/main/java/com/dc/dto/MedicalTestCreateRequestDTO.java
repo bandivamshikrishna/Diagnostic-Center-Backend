@@ -14,29 +14,26 @@ import lombok.Setter;
 @Setter
 public class MedicalTestCreateRequestDTO {
 
-    @NotBlank(message = "Department is required")
-    private String department;
+    @NotNull(message = "Department is required")
+    private Long department;
 
-    @NotBlank(message = "Category is required")
-    private String category;
+    @NotNull(message = "Category is required")
+    private Long category;
 
     @NotBlank(message = "Test Name is required")
     private String testName;
 
-    @NotBlank(message = "Test Code is required")
-    private String testCode;
+    @NotNull(message = "Specimen is required")
+    private Long specimen;
 
-    @NotBlank(message = "Specimen is required")
-    private String specimen;
-
-    @NotBlank(message = "Method is required")
-    private String method;
+    @NotNull(message = "Method is required")
+    private Long method;
 
     @NotBlank(message = "Normal Range is required")
     private String normalRange;
 
-    @NotBlank(message = "Unit is required")
-    private String unit;
+    @NotNull(message = "Unit is required")
+    private Long unit;
 
     @NotNull(message = "Is Panel is required")
     private Boolean panel;

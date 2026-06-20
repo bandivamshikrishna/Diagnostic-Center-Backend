@@ -91,7 +91,7 @@ public class UserAuthController {
             @DateTimeFormat(pattern = "dd-MM-yyyy") Date endDate,
             @RequestParam(name = "sortBy", required = false, defaultValue = "id") String sortBy,
             @RequestParam(name = "sortDirection", required = false, defaultValue = "DESC") String sortDirection,
-            @RequestParam(name = "pageNo", required = false, defaultValue = "1") Integer pageNumber,
+            @RequestParam(name = "pageNo", required = false, defaultValue = "0") Integer pageNumber,
             @RequestParam(name = "pageSize", required = false, defaultValue = "5") Integer pageSize,
             @AuthenticationPrincipal UserAuthEntity userAuthEntity){
 

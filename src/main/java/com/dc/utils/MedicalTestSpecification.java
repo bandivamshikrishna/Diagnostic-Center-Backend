@@ -1,6 +1,6 @@
 package com.dc.utils;
 
-import com.dc.entity.MedicalTestEntity;
+import com.dc.entity.*;
 import jakarta.persistence.criteria.*;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -23,10 +23,12 @@ public class MedicalTestSpecification {
                     predicate = cb.and(predicate, cb.like(cb.lower(root.get("testName")), "%"+testName.toLowerCase()+"%"));
                 }
                 else if(category != null && !category.isEmpty()){
-                    predicate = cb.and(predicate, cb.like(cb.lower(root.get("category")), "%"+category.toLowerCase()+"%"));
+                    Join<MedicalTestEntity, MedicalTestCategoryEntity> categoryJoin = root.join("category");
+                    predicate = cb.and(predicate, cb.equal(categoryJoin.get("id"), category));
                 }
                 else if(department != null && !department.isEmpty()){
-                    predicate = cb.and(predicate, cb.like(cb.lower(root.get("department")), "%"+department.toLowerCase()+"%"));
+                    Join<MedicalTestEntity, MedicalTestDepartmentEntity> departmentJoin = root.join("department");
+                    predicate = cb.and(predicate, cb.equal(departmentJoin.get("id"), department));
                 }
                 else if(startDate!=null && endDate!=null){
                     predicate = cb.and(predicate, cb.and(cb.greaterThanOrEqualTo(root.get("createdDate"), startDate),

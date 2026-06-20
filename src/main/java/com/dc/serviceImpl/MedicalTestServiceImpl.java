@@ -1,8 +1,7 @@
 package com.dc.serviceImpl;
 
 import com.dc.dto.*;
-import com.dc.entity.MedicalTestEntity;
-import com.dc.entity.UserAuthEntity;
+import com.dc.entity.*;
 import com.dc.exception.MedicalTestException;
 import com.dc.exception.UserException;
 import com.dc.mapper.MedicalTestMapper;
@@ -14,12 +13,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -36,82 +31,111 @@ public class MedicalTestServiceImpl implements MedicalTestService {
 
 
     @Override
-    public List<Map<String,String>> getMedicalTestDepartments() {
-        return medicalTestDepartmentRepository.findAll().stream().map(
-                department -> {
-                    Map<String,String> map = new HashMap<>();
-                    map.put("name", department.getId().toString());
-                    map.put("value", department.getDepartmentName());
-                    return map;
-                }
-        ).toList();
-    }
-
-    @Override
-    public List<Map<String, String>> getMedicalTestCategories() {
-        return medicalTestCategoryRepository.findAll().stream().map(
-                category -> {
-                    Map<String,String> map = new HashMap<>();
-                    map.put("name", category.getId().toString());
-                    map.put("value", category.getCategoryName());
-                    return map;
-                }
-        ).toList();
-    }
-
-    @Override
-    public List<Map<String, String>> getMedicalTestMethods() {
-        return medicalTestMethodRepository.findAll().stream().map(
-                method -> {
-                    Map<String,String> map = new HashMap<>();
-                    map.put("name", method.getId().toString());
-                    map.put("value", method.getMethodName());
-                    return map;
-                }
-        ).toList();
-    }
-
-    @Override
-    public List<Map<String, String>> getMedicalTestSpecimens() {
-        return medicalTestSpecimenRepository.findAll().stream().map(
-                specimen -> {
-                    Map<String,String> map = new HashMap<>();
-                    map.put("name", specimen.getId().toString());
-                    map.put("value", specimen.getSpecimenName());
-                    return map;
-                }
-        ).toList();
-    }
-
-    @Override
-    public List<Map<String, String>> getMedicalTestUnits() {
-        return medicalTestUnitRepository.findAll().stream().map(
-                unit -> {
-                    Map<String,String> map = new HashMap<>();
-                    map.put("name", unit.getId().toString());
-                    map.put("value", unit.getUnit());
-                    return map;
-                }
-        ).toList();
+    public List<Map<String,String>> getMedicalTestLovs(String type) {
+        if(Objects.equals(type, "DEPARTMENTS")){
+            return medicalTestDepartmentRepository.findAll().stream().map(
+                    department -> {
+                        Map<String,String> map = new HashMap<>();
+                        map.put("name", department.getId().toString());
+                        map.put("value", department.getDepartmentName());
+                        return map;
+                    }
+            ).toList();
+        }
+        else if(Objects.equals(type,"CATEGORIES")){
+            return medicalTestCategoryRepository.findAll().stream().map(
+                    category -> {
+                        Map<String,String> map = new HashMap<>();
+                        map.put("name", category.getId().toString());
+                        map.put("value", category.getCategoryName());
+                        return map;
+                    }
+            ).toList();
+        }
+        else if(Objects.equals(type,"METHODS")){
+            return medicalTestMethodRepository.findAll().stream().map(
+                    method -> {
+                        Map<String,String> map = new HashMap<>();
+                        map.put("name", method.getId().toString());
+                        map.put("value", method.getMethodName());
+                        return map;
+                    }
+            ).toList();
+        }
+        else if(Objects.equals(type,"SPECIMENS")){
+            return medicalTestSpecimenRepository.findAll().stream().map(
+                    specimen -> {
+                        Map<String,String> map = new HashMap<>();
+                        map.put("name", specimen.getId().toString());
+                        map.put("value", specimen.getSpecimenName());
+                        return map;
+                    }
+            ).toList();
+        }
+        else if(Objects.equals(type,"UNITS")){
+            return medicalTestUnitRepository.findAll().stream().map(
+                    unit -> {
+                        Map<String,String> map = new HashMap<>();
+                        map.put("name", unit.getId().toString());
+                        map.put("value", unit.getUnit());
+                        return map;
+                    }
+            ).toList();
+        }
+        else
+            return null;
     }
 
     @Override
     public String createMedicalTest(MedicalTestCreateRequestDTO medicalTestCreateRequestDTO, UserAuthEntity createdBy) {
-//        UserAuthEntity createdByUserID = userAuthRepository.findById(createdBy.getId()).orElseThrow(
-//                () -> new UserException("createdByUserID",String.format("User Not Found with ID : %d", createdBy.getId()))
-//        );
-//        if(medicalTestRepository.existsByTestName(medicalTestCreateRequestDTO.getTestName().toLowerCase().trim()))
-//            throw new MedicalTestException("testName",String.format("Medical Test Already Exists with Name : %s", medicalTestCreateRequestDTO.getTestName()));
-//        if(medicalTestRepository.existsByTestCode(medicalTestCreateRequestDTO.getTestCode().toLowerCase().trim()))
-//            throw new MedicalTestException("testCode", String.format("Medical Test Code Already Exists with Code : %s", medicalTestCreateRequestDTO.getTestCode()));
-//        MedicalTestEntity medicalTestEntity = MedicalTestMapper.fromCreateDTOToEntity(medicalTestCreateRequestDTO);
-//        medicalTestEntity.setTestName(medicalTestEntity.getTestName().toLowerCase().trim());
-//        medicalTestEntity.setTestCode(medicalTestEntity.getTestCode().toLowerCase().trim());
-//        medicalTestEntity.setActive(true);
-//        medicalTestEntity.setCreatedByUserID(createdByUserID);
-//        medicalTestEntity.setCreatedDate(LocalDateTime.now());
-//        return String.format("Test Created Successfully with ID : %d", medicalTestRepository.save(medicalTestEntity).getId());
-        return "";
+        MedicalTestDepartmentEntity medicalTestDepartment = medicalTestDepartmentRepository.findById(
+                medicalTestCreateRequestDTO.getDepartment()).orElseThrow(
+                ()-> new MedicalTestException("id", "Invalid Department")
+        );
+
+        MedicalTestCategoryEntity medicalTestCategory = medicalTestCategoryRepository.findById(
+                medicalTestCreateRequestDTO.getCategory()).orElseThrow(
+                ()-> new MedicalTestException("id", "Invalid Category")
+        );
+
+        MedicalTestSpecimenEntity medicalTestSpecimen = medicalTestSpecimenRepository.findById(
+                medicalTestCreateRequestDTO.getSpecimen()).orElseThrow(
+                ()-> new MedicalTestException("id", "Invalid Specimen")
+        );
+
+        MedicalTestMethodEntity medicalTestMethod = medicalTestMethodRepository.findById(
+                medicalTestCreateRequestDTO.getMethod()).orElseThrow(
+                ()-> new MedicalTestException("id", "Invalid Method")
+        );
+
+        MedicalTestUnitEntity medicalTestUnit = medicalTestUnitRepository.findById(
+                medicalTestCreateRequestDTO.getUnit()).orElseThrow(
+                ()-> new MedicalTestException("id", "Invalid Unit")
+        );
+
+        UserAuthEntity createdByUserID = userAuthRepository.findById(createdBy.getId()).orElseThrow(
+                () -> new UserException("createdByUserID",String.format("User Not Found with ID : %d", createdBy.getId()))
+        );
+
+        if(medicalTestRepository.existsByTestNameIgnoreCase(medicalTestCreateRequestDTO.getTestName()))
+            throw new MedicalTestException("testName", String.format("Medical Test Already Exists with name %s", medicalTestCreateRequestDTO.getTestName()));
+
+        MedicalTestEntity medicalTest = new MedicalTestEntity();
+        medicalTest.setDepartment(medicalTestDepartment);
+        medicalTest.setCategory(medicalTestCategory);
+        medicalTest.setPanel(medicalTestCreateRequestDTO.getPanel());
+        medicalTest.setPanelName(medicalTestCreateRequestDTO.getPanelName());
+        medicalTest.setTestName(medicalTestCreateRequestDTO.getTestName());
+        medicalTest.setTestCode('T'+String.format("%010d", medicalTestRepository.getNextTestCode()));
+        medicalTest.setSpecimen(medicalTestSpecimen);
+        medicalTest.setMethod(medicalTestMethod);
+        medicalTest.setActive(true);
+        medicalTest.setUnit(medicalTestUnit);
+        medicalTest.setNormalRange(medicalTestCreateRequestDTO.getNormalRange());
+        medicalTest.setCreatedDate(LocalDateTime.now());
+        medicalTest.setCreatedByUserID(createdByUserID);
+        String testCode = medicalTestRepository.save(medicalTest).getTestCode();
+        return String.format("Test Created successfully with ID : %s", testCode);
     }
 
     @Override
@@ -123,18 +147,55 @@ public class MedicalTestServiceImpl implements MedicalTestService {
     }
 
     @Override
-    public String updateMedicalTestById(Long id, MedicalTestUpdateRequestDTO medicalTestUpdateRequestDTO) {
-        UserAuthEntity lastModifiedByUserID = userAuthRepository.findById(medicalTestUpdateRequestDTO.getLastModifiedByUserID()).orElseThrow(
-                () -> new UserException("lastModifiedByUserID",String.format("User Not Found with ID : %d", medicalTestUpdateRequestDTO.getLastModifiedByUserID()))
-        );
+    public String updateMedicalTestById(Long id, MedicalTestCreateRequestDTO medicalTestUpdateRequestDTO,UserAuthEntity updatedBy) {
+
         MedicalTestEntity medicalTestEntity = medicalTestRepository.findById(id).orElseThrow(
                 ()-> new MedicalTestException("id",String.format("Medical Test Not Found with ID : %d", id))
         );
 
-        if(medicalTestRepository.existsByTestNameAndIdNot(medicalTestUpdateRequestDTO.getTestName().toLowerCase().trim(),id))
+        MedicalTestDepartmentEntity medicalTestDepartment = medicalTestDepartmentRepository.findById(
+                medicalTestUpdateRequestDTO.getDepartment()).orElseThrow(
+                ()-> new MedicalTestException("id", "Invalid Department")
+        );
+
+        MedicalTestCategoryEntity medicalTestCategory = medicalTestCategoryRepository.findById(
+                medicalTestUpdateRequestDTO.getCategory()).orElseThrow(
+                ()-> new MedicalTestException("id", "Invalid Category")
+        );
+
+        MedicalTestSpecimenEntity medicalTestSpecimen = medicalTestSpecimenRepository.findById(
+                medicalTestUpdateRequestDTO.getSpecimen()).orElseThrow(
+                ()-> new MedicalTestException("id", "Invalid Specimen")
+        );
+
+        MedicalTestMethodEntity medicalTestMethod = medicalTestMethodRepository.findById(
+                medicalTestUpdateRequestDTO.getMethod()).orElseThrow(
+                ()-> new MedicalTestException("id", "Invalid Method")
+        );
+
+        MedicalTestUnitEntity medicalTestUnit = medicalTestUnitRepository.findById(
+                medicalTestUpdateRequestDTO.getUnit()).orElseThrow(
+                ()-> new MedicalTestException("id", "Invalid Unit")
+        );
+
+        UserAuthEntity lastModifiedByUserID = userAuthRepository.findById(updatedBy.getId()).orElseThrow(
+                () -> new UserException("lastModifiedByUserID",String.format("User Not Found with ID : %d", updatedBy.getId()))
+        );
+
+
+        if(medicalTestRepository.existsByTestNameIgnoreCaseAndIdNot(medicalTestUpdateRequestDTO.getTestName().toLowerCase().trim(),id))
             throw new MedicalTestException("testName",String.format("Medical Test Already Exists with name %s", medicalTestUpdateRequestDTO.getTestName()));
 
-        MedicalTestMapper.fromUpdateDTOToEntity(medicalTestEntity,medicalTestUpdateRequestDTO);
+
+        medicalTestEntity.setDepartment(medicalTestDepartment);
+        medicalTestEntity.setCategory(medicalTestCategory);
+        medicalTestEntity.setMethod(medicalTestMethod);
+        medicalTestEntity.setSpecimen(medicalTestSpecimen);
+        medicalTestEntity.setUnit(medicalTestUnit);
+        medicalTestEntity.setTestName(medicalTestUpdateRequestDTO.getTestName());
+        medicalTestEntity.setNormalRange(medicalTestUpdateRequestDTO.getNormalRange());
+        medicalTestEntity.setIsPanel(medicalTestUpdateRequestDTO.getPanel());
+        medicalTestEntity.setPanelName(medicalTestUpdateRequestDTO.getPanelName());
         medicalTestEntity.setLastModifiedByUserID(lastModifiedByUserID);
         medicalTestEntity.setLastModifiedDate(LocalDateTime.now());
         medicalTestRepository.save(medicalTestEntity);
@@ -142,11 +203,21 @@ public class MedicalTestServiceImpl implements MedicalTestService {
     }
 
     @Override
-    public PageResponseDTO<MedicalTestResponseDTO> getAllMedicalTests(UserAuthEntity userAuthEntity, String testCode, String testName, String category, String department, Date startDate, Date endDate, String filterType, Pageable pageable) {
+    public PageResponseDTO<MedicalTestListResponseDTO> getAllMedicalTests(UserAuthEntity userAuthEntity, String testCode, String testName, String category, String department, Date startDate, Date endDate, String filterType, Pageable pageable) {
         Specification<MedicalTestEntity> spec = MedicalTestSpecification.getMedicalTestsFilters(testCode,testName,category,department,startDate,endDate,filterType);
 
         Page<MedicalTestEntity> page = medicalTestRepository.findAll(spec,pageable);
-        List<MedicalTestResponseDTO> medicalTestResponses = page.getContent().stream().map(MedicalTestMapper::fromEntityToDTO).toList();
+        List<MedicalTestListResponseDTO> medicalTestResponses = page.getContent().stream().map(MedicalTestMapper::fromEntityToListDTO).toList();
         return new PageResponseDTO<>(medicalTestResponses,page.getNumber(),page.getSize(),page.getTotalElements(),page.getTotalPages(),page.isLast());
+    }
+
+    @Override
+    public String activateOrDeActivateMedicalTest(Long id) {
+        MedicalTestEntity medicalTest = medicalTestRepository.findById(id).orElseThrow(
+                ()-> new MedicalTestException("id", String.format("Test Not found with ID : %s", id))
+        );
+        medicalTest.setActive(!medicalTest.getActive());
+        medicalTestRepository.save(medicalTest);
+        return "Test Updated successfully";
     }
 }

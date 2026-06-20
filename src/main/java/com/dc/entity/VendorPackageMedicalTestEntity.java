@@ -1,8 +1,12 @@
 package com.dc.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.envers.Audited;
 
+@Setter
+@Getter
 @Audited
 @Entity(name = "tbl_vendor_package_medical_test_details")
 public class VendorPackageMedicalTestEntity {
@@ -20,27 +24,4 @@ public class VendorPackageMedicalTestEntity {
     private MedicalTestEntity medicalTest;
 
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public VendorPackageEntity getPackageID() {
-        return packageID;
-    }
-
-    public void setPackageID(VendorPackageEntity packageID) {
-        this.packageID = packageID;
-    }
-
-    public MedicalTestEntity getMedicalTest() {
-        return medicalTest;
-    }
-
-    public void setMedicalTest(MedicalTestEntity medicalTest) {
-        this.medicalTest = medicalTest;
-    }
 }
