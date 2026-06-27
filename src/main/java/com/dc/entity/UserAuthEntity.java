@@ -12,7 +12,8 @@ import java.util.Collection;
 import java.util.List;
 
 @Audited
-@Entity(name = "tbl_user_details")
+@Entity
+@Table(name = "tbl_user_details")
 public class UserAuthEntity implements UserDetails {
 
     @Id

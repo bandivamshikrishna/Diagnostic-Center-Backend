@@ -4,7 +4,8 @@ import jakarta.persistence.*;
 import org.hibernate.envers.Audited;
 
 @Audited
-@Entity(name = "tbl_vendor_branch_details")
+@Entity
+@Table(name = "tbl_vendor_branch_details")
 public class VendorBranchEntity {
 
     @Id

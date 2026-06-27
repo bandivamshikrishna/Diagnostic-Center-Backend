@@ -9,7 +9,8 @@ import org.hibernate.envers.Audited;
 @Audited
 @Getter
 @Setter
-@Entity(name = "tbl_doctor_details")
+@Entity
+@Table(name = "tbl_doctor_details")
 public class DoctorEntity {
 
     @Id

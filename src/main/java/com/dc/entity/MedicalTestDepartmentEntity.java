@@ -10,7 +10,8 @@ import java.time.LocalDateTime;
 @Audited
 @Getter
 @Setter
-@Entity(name = "tbl_medical_test_departments")
+@Entity
+@Table(name = "tbl_medical_test_departments")
 public class MedicalTestDepartmentEntity {
 
     @Id

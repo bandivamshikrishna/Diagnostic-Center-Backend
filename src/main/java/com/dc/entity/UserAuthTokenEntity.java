@@ -7,7 +7,8 @@ import org.hibernate.envers.Audited;
 import java.time.LocalDateTime;
 
 @Audited
-@Entity(name = "tbl_user_token_details")
+@Entity
+@Table(name = "tbl_user_token_details")
 public class UserAuthTokenEntity {
 
     @Id

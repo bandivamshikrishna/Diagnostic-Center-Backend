@@ -5,7 +5,8 @@ import jakarta.persistence.*;
 import org.hibernate.envers.Audited;
 
 @Audited
-@Entity(name = "tbl_patient_package_details")
+@Entity
+@Table(name = "tbl_patient_package_details")
 public class PatientMedicalTestPackageEntity {
 
     @Id

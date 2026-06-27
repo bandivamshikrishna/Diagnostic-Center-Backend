@@ -1,6 +1,5 @@
 package com.dc.utils;
 
-import com.dc.exception.TokenException;
 import com.dc.repository.UserAuthTokenRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

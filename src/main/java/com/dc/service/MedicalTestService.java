@@ -17,4 +17,7 @@ public interface MedicalTestService {
     PageResponseDTO<MedicalTestListResponseDTO> getAllMedicalTests(UserAuthEntity userAuthEntity, String testCode, String testName, String category,
                                                      String department, Date startDate, Date endDate, String filterType, Pageable pageable);
     String activateOrDeActivateMedicalTest(Long id);
+    PageResponseDTO<ManageMedicalTestListResponseDTO> manageMedicalTests(UserAuthEntity userAuthEntity, String testName,String category,
+                                                                         String department, Pageable pageable);
+    String updateMedicalTests(List<ManageMedicalTestCreateRequestDTO> manageTests,UserAuthEntity userAuthEntity);
 }

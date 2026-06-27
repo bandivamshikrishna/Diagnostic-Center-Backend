@@ -1,8 +1,10 @@
 package com.dc.mapper;
 
+import com.dc.dto.ManageMedicalTestListResponseDTO;
 import com.dc.dto.MedicalTestListResponseDTO;
 import com.dc.dto.MedicalTestResponseDTO;
 import com.dc.entity.MedicalTestEntity;
+import com.dc.entity.VendorMedicalTestEntity;
 
 public class MedicalTestMapper {
 

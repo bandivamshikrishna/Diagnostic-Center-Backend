@@ -8,7 +8,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 @Audited
-@Entity(name = "tbl_vendor_details")
+@Entity
+@Table(name = "tbl_vendor_details")
 public class VendorEntity {
 
     @Id

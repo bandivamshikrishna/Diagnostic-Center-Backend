@@ -10,8 +10,11 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Date;
 import java.util.List;
+
+
 @Audited
-@Entity(name = "tbl_patient_details")
+@Entity
+@Table(name = "tbl_patient_details")
 public class PatientEntity {
 
     @Id

@@ -8,7 +8,8 @@ import org.hibernate.envers.Audited;
 import java.time.LocalDateTime;
 
 @Audited
-@Entity(name = "tbl_medical_test_units")
+@Entity
+@Table(name = "tbl_medical_test_units")
 @Getter
 @Setter
 public class MedicalTestUnitEntity {

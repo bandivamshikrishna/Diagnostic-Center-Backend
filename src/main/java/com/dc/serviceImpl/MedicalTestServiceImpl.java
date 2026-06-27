@@ -4,9 +4,11 @@ import com.dc.dto.*;
 import com.dc.entity.*;
 import com.dc.exception.MedicalTestException;
 import com.dc.exception.UserException;
+import com.dc.exception.VendorException;
 import com.dc.mapper.MedicalTestMapper;
 import com.dc.repository.*;
 import com.dc.service.MedicalTestService;
+import com.dc.utils.ManageMedicalTestSpecification;
 import com.dc.utils.MedicalTestSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -15,6 +17,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +31,8 @@ public class MedicalTestServiceImpl implements MedicalTestService {
     private final MedicalTestSpecimenRepository medicalTestSpecimenRepository;
     private final MedicalTestMethodRepository medicalTestMethodRepository;
     private final MedicalTestUnitRepository medicalTestUnitRepository;
+    private final VendorMedicalTestRepository vendorMedicalTestRepository;
+    private final VendorRepository vendorRepository;
 
 
 
@@ -199,7 +205,7 @@ public class MedicalTestServiceImpl implements MedicalTestService {
         medicalTestEntity.setLastModifiedByUserID(lastModifiedByUserID);
         medicalTestEntity.setLastModifiedDate(LocalDateTime.now());
         medicalTestRepository.save(medicalTestEntity);
-        return String.format("Medical Test Updated Successfully with ID : %d", id);
+        return String.format("Medical Test Updated Successfully with ID : %s", medicalTestEntity.getTestCode());
     }
 
     @Override
@@ -219,5 +225,93 @@ public class MedicalTestServiceImpl implements MedicalTestService {
         medicalTest.setActive(!medicalTest.getActive());
         medicalTestRepository.save(medicalTest);
         return "Test Updated successfully";
+    }
+
+    @Override
+    public PageResponseDTO<ManageMedicalTestListResponseDTO> manageMedicalTests(UserAuthEntity userAuthEntity, String testName, String category, String department, Pageable pageable) {
+        Specification<MedicalTestEntity> spec = ManageMedicalTestSpecification.getMedicalTests(testName,category,department);
+
+        Page<MedicalTestEntity> page = medicalTestRepository.findAll(spec,pageable);
+        List<Long> testIds = page.getContent().stream().map(MedicalTestEntity::getId).toList();
+        List<VendorMedicalTestEntity> vendorTests = vendorMedicalTestRepository.findByVendorIdAndMedicalTestIds(userAuthEntity.getVendorID().getId(), testIds);
+        Map<Long, VendorMedicalTestEntity> selectedTestsMap = vendorTests.stream().collect(
+                Collectors.toMap(
+                        v-> v.getMedicalTest().getId(),
+                        Function.identity()
+                )
+        );
+        List<ManageMedicalTestListResponseDTO> response = page.map(test ->{
+            VendorMedicalTestEntity vendorMedicalTestEntity = selectedTestsMap.get(test.getId());
+            ManageMedicalTestListResponseDTO responseDTO = new ManageMedicalTestListResponseDTO();
+            responseDTO.setId(test.getId());
+            responseDTO.setTestName(test.getTestName());
+            responseDTO.setCategory(test.getCategory().getCategoryName());
+            responseDTO.setDepartment(test.getDepartment().getDepartmentName());
+            responseDTO.setSelected(vendorMedicalTestEntity != null);
+            responseDTO.setTestPrice(vendorMedicalTestEntity !=null ? vendorMedicalTestEntity.getMedicalTestPrice() : null);
+            return  responseDTO;
+        }).getContent();
+        return new PageResponseDTO<>(response,page.getNumber(),page.getSize(),page.getTotalElements(),page.getTotalPages(),page.isLast());
+    }
+
+    @Override
+    public String updateMedicalTests(List<ManageMedicalTestCreateRequestDTO> tests, UserAuthEntity userAuthEntity) {
+        VendorEntity vendor = vendorRepository.findById(userAuthEntity.getVendorID().getId()).orElseThrow(() ->
+                    new VendorException("id",String.format("Invalid Vendor with ID : %d",userAuthEntity.getVendorID().getId())));
+
+        Set<Long> newTestIds = tests.stream()
+                    .map(ManageMedicalTestCreateRequestDTO::getTestID)
+                    .collect(Collectors.toSet());
+
+        List<VendorMedicalTestEntity> existingTests =
+                    vendorMedicalTestRepository.findByVendorId(vendor.getId());
+
+        Map<Long, VendorMedicalTestEntity> existingMap =
+                    existingTests.stream()
+                            .collect(Collectors.toMap(
+                                    e -> e.getMedicalTest().getId(),
+                                    e -> e
+                            ));
+
+        List<VendorMedicalTestEntity> toDelete = existingTests.stream()
+                    .filter(e -> !newTestIds.contains(e.getMedicalTest().getId()))
+                    .toList();
+
+        vendorMedicalTestRepository.deleteAll(toDelete);
+
+        List<MedicalTestEntity> medicalTests =
+                    medicalTestRepository.findAllById(newTestIds);
+
+        Map<Long, MedicalTestEntity> medicalTestMap =
+                    medicalTests.stream()
+                            .collect(Collectors.toMap(MedicalTestEntity::getId, m -> m));
+
+            List<VendorMedicalTestEntity> result = new ArrayList<>();
+
+            for (ManageMedicalTestCreateRequestDTO dto : tests) {
+
+                MedicalTestEntity medicalTest = medicalTestMap.get(dto.getTestID());
+
+                if (medicalTest == null) {
+                    throw new MedicalTestException(
+                            "id",
+                            "Invalid Medical Test with ID : " + dto.getTestID()
+                    );
+                }
+
+                VendorMedicalTestEntity entity = existingMap.get(dto.getTestID());
+
+                if (entity == null) {
+                    entity = new VendorMedicalTestEntity();
+                    entity.setVendor(vendor);
+                    entity.setMedicalTest(medicalTest);
+                }
+
+                entity.setMedicalTestPrice(dto.getTestPrice());
+                result.add(entity);
+            }
+
+            vendorMedicalTestRepository.saveAll(result);
+            return "Tests Details Updated Successfully.";
     }
 }

@@ -1,8 +1,8 @@
 package com.dc.entity;
 
 import jakarta.persistence.*;
-
-@Entity(name = "tbl_generic_lovs")
+@Entity
+@Table(name = "tbl_generic_lovs")
 public class GenericLovsEntity {
 
     @Id

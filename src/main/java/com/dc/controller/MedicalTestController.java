@@ -87,4 +87,31 @@ public class MedicalTestController {
         map.put("message", medicalTestService.activateOrDeActivateMedicalTest(id));
         return new ResponseEntity<>(map,HttpStatus.OK);
     }
+
+
+    @GetMapping("/manage-tests")
+    public ResponseEntity<PageResponseDTO<ManageMedicalTestListResponseDTO>> manageMedicalTests(
+            @RequestParam(name = "testName",required = false, defaultValue = "") String testName,
+            @RequestParam(name = "category", required = false, defaultValue = "") String category,
+            @RequestParam(name = "department", required = false, defaultValue = "") String department,
+            @RequestParam(name = "sortBy", required = false, defaultValue = "id") String sortBy,
+            @RequestParam(name = "sortDirection", required = false, defaultValue = "DESC") String sortDirection,
+            @RequestParam(name = "pageNo", required = false, defaultValue = "0") Integer pageNumber,
+            @RequestParam(name = "pageSize", required = false, defaultValue = "5") Integer pageSize,
+            @AuthenticationPrincipal UserAuthEntity userAuthEntity){
+
+        Sort sort = Sort.by(sortBy);
+        sort = sortDirection.equalsIgnoreCase("DESC") ? sort.descending() : sort.ascending();
+        PageRequest pageRequest = PageRequest.of(pageNumber, pageSize, sort);
+        return new ResponseEntity<>(medicalTestService.manageMedicalTests(userAuthEntity,testName,category,department,pageRequest), HttpStatus.OK);
+    }
+
+
+    @PostMapping("/manage-tests")
+    public ResponseEntity<Map<String,String>> updateMedicalTest(@RequestBody List<ManageMedicalTestCreateRequestDTO> tests,
+                                                                @AuthenticationPrincipal UserAuthEntity userAuthEntity){
+        Map<String,String> map = new HashMap<>();
+        map.put("message", medicalTestService.updateMedicalTests(tests,userAuthEntity));
+        return new ResponseEntity<>(map,HttpStatus.OK);
+    }
 }

@@ -5,7 +5,8 @@ import lombok.Setter;
 import org.hibernate.envers.Audited;
 
 @Audited
-@Entity(name = "tbl_vendor_medical_test_details")
+@Entity
+@Table(name = "tbl_vendor_medical_test_details")
 @Getter
 @Setter
 public class VendorMedicalTestEntity {

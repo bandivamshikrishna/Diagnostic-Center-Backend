@@ -11,7 +11,8 @@ import java.util.List;
 @Setter
 @Getter
 @Audited
-@Entity(name = "tbl_vendor_package_details")
+@Entity
+@Table(name = "tbl_vendor_package_details")
 public class VendorPackageEntity {
 
     @Id
