@@ -17,7 +17,6 @@ public class PatientMapper {
         patientEntity.setSampleCollectedTime(patientCreateRequestDTO.getSampleCollectedTime());
         patientEntity.setReportedDate(patientCreateRequestDTO.getReportedDate());
         patientEntity.setReportedTime(patientCreateRequestDTO.getReportedTime());
-        patientEntity.setPatientStatus(patientCreateRequestDTO.getStatus());
         return patientEntity;
     }
 }

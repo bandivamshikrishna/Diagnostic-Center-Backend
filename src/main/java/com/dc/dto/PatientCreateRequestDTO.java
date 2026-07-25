@@ -1,31 +1,38 @@
 package com.dc.dto;
 
-import com.dc.enums.PatientStatusEnum;
-import com.dc.validators.FinalValidation;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalTime;
 import java.util.Date;
-import java.util.List;
 
+
+
+@Getter
+@Setter
 public class PatientCreateRequestDTO {
 
-    @NotNull(message = "Title ID is required",groups = FinalValidation.class)
+    @NotNull(message = "Title ID is required")
     private Long titleID;
 
-    @NotBlank(message = "Patient name is required",groups = FinalValidation.class)
+    @NotBlank(message = "Patient name is required")
     private String patientName;
 
-    @NotNull(message = "Date is required",groups = FinalValidation.class)
+    @NotNull(message = "Date is required")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
     private Date dob;
 
-    @NotNull(message = "Gender is required",groups = FinalValidation.class)
+    @NotNull(message = "Gender is required")
     private Long genderID;
 
+    @Pattern(
+            regexp = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$",
+            message = "Please enter a valid email address"
+    )
     private String email;
 
     @Pattern(
@@ -38,164 +45,20 @@ public class PatientCreateRequestDTO {
     private Long doctorID;
 
 
-    @NotNull(message = "Sample Collected Date is required", groups = FinalValidation.class)
+    @NotNull(message = "Sample Collected Date is required")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
     private Date sampleCollectedDate;
 
-    @NotNull(message = "Sample Collected Time is required", groups = FinalValidation.class)
+    @NotNull(message = "Sample Collected Time is required")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss")
     private LocalTime sampleCollectedTime;
 
-    @NotNull(message = "Reported Date is required", groups = FinalValidation.class)
+    @NotNull(message = "Reported Date is required")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
     private Date reportedDate;
 
-    @NotNull(message = "Reported Time is required", groups = FinalValidation.class)
+    @NotNull(message = "Reported Time is required")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss")
     private LocalTime reportedTime;
 
-    @NotNull(message = "CreatedBy User ID is required",groups = FinalValidation.class)
-    private Long createdByUserID;
-
-
-    @NotNull(message = "Status is required")
-    private PatientStatusEnum status;
-
-    @NotNull(message = "Vendor ID is required")
-    private Long vendorID;
-
-    private List<PatientMedicalTestDTO> medicalTests;
-
-    private List<PatientPackageDTO> packages;
-
-
-    public Long getTitleID() {
-        return titleID;
-    }
-
-    public void setTitleID(Long titleID) {
-        this.titleID = titleID;
-    }
-
-    public String getPatientName() {
-        return patientName;
-    }
-
-    public void setPatientName(String patientName) {
-        this.patientName = patientName;
-    }
-
-    public Date getDob() {
-        return dob;
-    }
-
-    public void setDob(Date dob) {
-        this.dob = dob;
-    }
-
-    public Long getGenderID() {
-        return genderID;
-    }
-
-    public void setGenderID(Long genderID) {
-        this.genderID = genderID;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
-    public Long getDoctorID() {
-        return doctorID;
-    }
-
-    public void setDoctorID(Long doctorID) {
-        this.doctorID = doctorID;
-    }
-
-
-    public Date getSampleCollectedDate() {
-        return sampleCollectedDate;
-    }
-
-    public void setSampleCollectedDate(Date sampleCollectedDate) {
-        this.sampleCollectedDate = sampleCollectedDate;
-    }
-
-    public LocalTime getSampleCollectedTime() {
-        return sampleCollectedTime;
-    }
-
-    public void setSampleCollectedTime(LocalTime sampleCollectedTime) {
-        this.sampleCollectedTime = sampleCollectedTime;
-    }
-
-    public Date getReportedDate() {
-        return reportedDate;
-    }
-
-    public void setReportedDate(Date reportedDate) {
-        this.reportedDate = reportedDate;
-    }
-
-    public LocalTime getReportedTime() {
-        return reportedTime;
-    }
-
-    public void setReportedTime(LocalTime reportedTime) {
-        this.reportedTime = reportedTime;
-    }
-
-    public Long getCreatedByUserID() {
-        return createdByUserID;
-    }
-
-    public void setCreatedByUserID(Long createdByUserID) {
-        this.createdByUserID = createdByUserID;
-    }
-
-    public PatientStatusEnum getStatus() {
-        return status;
-    }
-
-    public void setStatus(PatientStatusEnum status) {
-        this.status = status;
-    }
-
-    public Long getVendorID() {
-        return vendorID;
-    }
-
-    public void setVendorID(Long vendorID) {
-        this.vendorID = vendorID;
-    }
-
-
-    public List<PatientMedicalTestDTO> getMedicalTests() {
-        return medicalTests;
-    }
-
-    public void setMedicalTests(List<PatientMedicalTestDTO> medicalTests) {
-        this.medicalTests = medicalTests;
-    }
-
-    public List<PatientPackageDTO> getPackages() {
-        return packages;
-    }
-
-    public void setPackages(List<PatientPackageDTO> packages) {
-        this.packages = packages;
-    }
 }

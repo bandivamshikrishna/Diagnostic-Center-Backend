@@ -2,6 +2,10 @@ package com.dc.repository;
 
 import com.dc.entity.UserAuthEntity;
 import com.dc.entity.UserRoleEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -21,4 +25,14 @@ public interface UserAuthRepository extends JpaRepository<UserAuthEntity,Long>, 
      Long getNextUserCode();
 
      Boolean existsByEmailAndIdNot(String email, Long id);
+
+
+     @Override
+    @EntityGraph(attributePaths = {
+            "role",
+            "vendorID",
+            "createdByUserID",
+            "lastModifiedByUserID"
+    })
+    Page<UserAuthEntity> findAll(Specification<UserAuthEntity> spec, Pageable pageable);
 }
