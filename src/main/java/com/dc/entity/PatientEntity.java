@@ -50,22 +50,6 @@ public class PatientEntity {
     @Email
     private String email;
 
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "doctor_id", referencedColumnName = "id")
-    private DoctorEntity doctor;
-
-
-    private Date sampleCollectedDate;
-
-    private LocalTime sampleCollectedTime;
-
-    private Date reportedDate;
-
-    private LocalTime reportedTime;
-
-
-
     @Column(nullable = false)
     private LocalDateTime createdDateTime;
 
@@ -81,16 +65,11 @@ public class PatientEntity {
     private UserAuthEntity lastModifiedBy;
 
 
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "vendor_id",referencedColumnName = "id",nullable = false)
     private VendorEntity vendorID;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "patient")
-    private List<PatientMedicalTestEntity> medicalTests;
-
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "patient")
-    private List<PatientMedicalTestPackageEntity> testPackages;
+    private List<PatientVisitEntity> patientVisitEntities;
 
 }

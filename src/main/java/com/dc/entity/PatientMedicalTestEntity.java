@@ -2,10 +2,14 @@ package com.dc.entity;
 
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.envers.Audited;
 
 @Audited
 @Entity
+@Getter
+@Setter
 @Table(name = "tbl_patient_medical_test_details")
 public class PatientMedicalTestEntity {
 
@@ -14,8 +18,8 @@ public class PatientMedicalTestEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "patient_id", referencedColumnName = "id", nullable = false)
-    private PatientEntity patient;
+    @JoinColumn(name = "patient_visit_id", referencedColumnName = "id", nullable = false)
+    private PatientVisitEntity patientVisit;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "medical_test_id", referencedColumnName = "id", nullable = false)
@@ -23,35 +27,5 @@ public class PatientMedicalTestEntity {
 
     private Double testDiscount;
 
-    public Double getTestDiscount() {
-        return testDiscount;
-    }
 
-    public void setTestDiscount(Double testDiscount) {
-        this.testDiscount = testDiscount;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public PatientEntity getPatient() {
-        return patient;
-    }
-
-    public void setPatient(PatientEntity patient) {
-        this.patient = patient;
-    }
-
-    public VendorMedicalTestEntity getMedicalTest() {
-        return medicalTest;
-    }
-
-    public void setMedicalTest(VendorMedicalTestEntity medicalTest) {
-        this.medicalTest = medicalTest;
-    }
 }

@@ -3,17 +3,13 @@ package com.dc.dto;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Map;
+
 @Setter
 @Getter
 public class UserResponseDTO {
-    private String email;
-    private String role;
-    private String vendor;
-    private String userCode;
-    private Long id;
-    private String fullName;
-    private String vendorBranch;
-    private String roleFullName;
-
-
+    private UserBasicDetails user;
+    private KeyValuePair role;
+    private KeyValuePair vendor;
+    private KeyValuePair branch;
 }

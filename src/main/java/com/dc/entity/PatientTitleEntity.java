@@ -2,10 +2,14 @@ package com.dc.entity;
 
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.envers.Audited;
 
 @Audited
 @Entity
+@Getter
+@Setter
 @Table(name = "tbl_title_details")
 public class PatientTitleEntity {
 
@@ -13,33 +17,16 @@ public class PatientTitleEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false,unique = true)
+    private Long sequence;
+
+    @Column(nullable = false,unique = true)
+    private String titleCode;
+
     @Column(nullable = false, unique = true)
     private String title;
 
     @Column(nullable = false,name = "is_active")
     private Boolean active;
 
-    public Boolean getActive() {
-        return active;
-    }
-
-    public void setActive(Boolean active) {
-        this.active = active;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
 }

@@ -1,5 +1,6 @@
 package com.dc.dto;
 
+import com.dc.utils.ValidatePatient;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -11,54 +12,28 @@ import java.time.LocalTime;
 import java.util.Date;
 
 
-
+@ValidatePatient
 @Getter
 @Setter
 public class PatientCreateRequestDTO {
 
-    @NotNull(message = "Title ID is required")
-    private Long titleID;
+    @NotNull(message = "Title is required")
+    private String title;
 
     @NotBlank(message = "Patient name is required")
-    private String patientName;
+    private String name;
 
     @NotNull(message = "Date is required")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
-    private Date dob;
+    private Date dateOfBirth;
 
     @NotNull(message = "Gender is required")
-    private Long genderID;
+    private String gender;
 
-    @Pattern(
-            regexp = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$",
-            message = "Please enter a valid email address"
-    )
     private String email;
 
-    @Pattern(
-            regexp = "^[6-9]\\d{9}$",
-            message = "Invalid Phone Number"
-    )
     private String phoneNumber;
 
 
-    private Long doctorID;
-
-
-    @NotNull(message = "Sample Collected Date is required")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
-    private Date sampleCollectedDate;
-
-    @NotNull(message = "Sample Collected Time is required")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss")
-    private LocalTime sampleCollectedTime;
-
-    @NotNull(message = "Reported Date is required")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
-    private Date reportedDate;
-
-    @NotNull(message = "Reported Time is required")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss")
-    private LocalTime reportedTime;
 
 }

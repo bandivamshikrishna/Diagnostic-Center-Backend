@@ -1,9 +1,10 @@
 package com.dc.mapper;
 
-import com.dc.dto.UserCreateOrUpdateRequestDTO;
-import com.dc.dto.UserListResponseDTO;
-import com.dc.dto.UserResponseDTO;
+import com.dc.dto.*;
 import com.dc.entity.UserAuthEntity;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class UserAuthMapper {
@@ -16,14 +17,31 @@ public class UserAuthMapper {
 
     public static UserResponseDTO fromEntityToDTO(UserAuthEntity userAuthEntity){
         UserResponseDTO userResponseDTO = new UserResponseDTO();
-        userResponseDTO.setEmail(userAuthEntity.getEmail());
-        userResponseDTO.setRole(userAuthEntity.getRole().getRoleCode());
-        userResponseDTO.setVendor(userAuthEntity.getRole().getRoleCode().equalsIgnoreCase("ad") ? "" : userAuthEntity.getVendorID().getVendorCode());
-        userResponseDTO.setFullName(userAuthEntity.getFullName());
-        userResponseDTO.setId(userAuthEntity.getId());
-        userResponseDTO.setUserCode(userAuthEntity.getRole().getRoleCode().equalsIgnoreCase("ad") ? "" : userAuthEntity.getUserCode());
-        userResponseDTO.setVendorBranch(userAuthEntity.getRole().getRoleCode().equalsIgnoreCase("ad") ? "" : userAuthEntity.getVendorBranch().getBranchCode());
-        userResponseDTO.setRoleFullName(userAuthEntity.getRole().getRoleName());
+        UserBasicDetails user = new UserBasicDetails();
+        user.setId(userAuthEntity.getId());
+        user.setCode(userAuthEntity.getRole().getRoleCode().equalsIgnoreCase("ad") ? "" : userAuthEntity.getUserCode());
+        user.setName(userAuthEntity.getFullName());
+        user.setEmail(userAuthEntity.getEmail());
+
+        KeyValuePair role = new KeyValuePair();
+        role.setId(userAuthEntity.getRole().getId());
+        role.setKey(userAuthEntity.getRole().getRoleCode());
+        role.setValue(userAuthEntity.getRole().getRoleName());
+
+        KeyValuePair vendor = new KeyValuePair();
+        vendor.setId(userAuthEntity.getRole().getRoleCode().equalsIgnoreCase("ad") ? 0 : userAuthEntity.getVendorID().getId());
+        vendor.setKey(userAuthEntity.getRole().getRoleCode().equalsIgnoreCase("ad") ? "" : userAuthEntity.getVendorID().getVendorCode());
+        vendor.setValue(userAuthEntity.getRole().getRoleCode().equalsIgnoreCase("ad") ? "" : userAuthEntity.getVendorID().getVendorCode());
+
+        KeyValuePair branch = new KeyValuePair();
+        branch.setId(userAuthEntity.getRole().getRoleCode().equalsIgnoreCase("ad") ? 0 : userAuthEntity.getVendorBranch().getId());
+        branch.setKey(userAuthEntity.getRole().getRoleCode().equalsIgnoreCase("ad") ? "" : userAuthEntity.getVendorBranch().getBranchCode());
+        branch.setValue(userAuthEntity.getRole().getRoleCode().equalsIgnoreCase("ad") ? "" : userAuthEntity.getVendorBranch().getBranchName());
+
+        userResponseDTO.setUser(user);
+        userResponseDTO.setRole(role);
+        userResponseDTO.setVendor(vendor);
+        userResponseDTO.setBranch(branch);
         return userResponseDTO;
     }
 
